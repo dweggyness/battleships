@@ -1,26 +1,18 @@
 
 const { Game } = require('./services/Game')
+const cache = require('./cache/cache')
 // TODO : begin using node-cache
-var gameID = {}
-var clients = []
 
 exports.setRoutes = async (app) => {
-    app.get('/', (req, res) => res.send("Hello World!"))
-
     app.post('/attackPos', (req, res) => {
-        console.log(gameID[req.body.gameID].joinGame(req.body.username));
-        res.json({ gameID });
+        console.log(cache.get('gameID')[req.body.gameID].joinGame(req.body.username));
+        res.json({ hotdog: cache.get('gameID') });
     })
 
     app.post('/startGame/:id', (req, res) => {
-        const id = req.param.id;
-
         // TODO Only create new game instance if tehre isn't already one
-        // If game instance available, attempt to join it as player2, otherwise as spectator
-        gameID[req.body.gameID] = new Game(req.body.gameID);
-        res.json({ status: 1 })
+        // If game instance available, attempt to join it as player2
         //TODO Return authentication token?
-
         const headers = {
             'Content-Type': 'text/event-stream',
             'Connection': 'keep-alive',
@@ -30,15 +22,18 @@ exports.setRoutes = async (app) => {
 
         const clientId = 1;
         const newClient = {
-        id: clientId,
-        res
+            id: clientId,
+            res: res
         };
-        clients.push(newClient);
+        cache.set("games", { 1: new Game(1) });
+        cache.update("games", { 2: new Game(2) })
+        cache.update("games", { 4: new Game(4) })
+        console.log(cache.get('games'));
+        // const clients = cache.get('clientID');
         // When client closes connection we update the clients list
         // avoiding the disconnected one
         req.on('close', () => {
-            console.log(`${clientId} Connection closed`);
-            clients = clients.filter(c => c.id !== clientId);
+            console.log(` Connection closed`);
         });
     })
 
