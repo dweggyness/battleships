@@ -12,12 +12,12 @@ const bodyParser = require('body-parser');
 const port = 3000;
 
 async function startServer() {
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: false }));
 
-  await setRoutes(app);
+    await setRoutes(app);
 
-  http.listen(port, () => console.log(`Server started at port ${port}`));
+    http.listen(port, () => console.log(`Server started at port ${port}`));
 }
 
 startServer();
