@@ -1,7 +1,7 @@
 
 const { Game } = require('./services/Game');
 const { io } = require('./app');
-const ongoingGamesCache = require('./cache/cache');
+const { ongoingGamesCache, clientsCache } = require('./cache/cache');
 // TODO : begin using node-cache
 
 exports.setRoutes = async (app) => {
@@ -16,10 +16,10 @@ exports.setRoutes = async (app) => {
             socket.broadcast.emit('chat message', msg);
         });
 
-        socket.on('attackPos' ({ clientID, attackPos }) => {
+        socket.on('attackPos', ({ clientID, attackPos }) => {
             // TODO : From clientID, find the game that the user is in, and if they're p1 or p2
             console.log('wahc');
-        }
+        });
 
         socket.on('startGame', ({ gameID, shipCoords }) => {
             const existingGameInstance = ongoingGamesCache.get(gameID);
@@ -29,10 +29,9 @@ exports.setRoutes = async (app) => {
                 socket.join(gameID);
                 console.log('Existing game found');
                 const gameObject = {
-                    ...game,
-                    player2Socket: socket,
+                    game,
                 };
-                console.log(ongoingGamesCache.update(gameID, gameObject));
+                console.log((ongoingGamesCache.update(gameID, gameObject)));
             } else {
                 console.log('New game made at ', gameID);
                 const game = new Game(gameID);

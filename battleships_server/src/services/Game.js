@@ -1,6 +1,4 @@
 
-const shipLength = require('../constants/ships');
-
 module.exports.Game = class Game {
     constructor(gameID) { // gameID: int
         this.gameID = gameID;
@@ -44,13 +42,20 @@ module.exports.Game = class Game {
 
         keys.forEach((shipName) => {
             const shipCoordsArr = shipCoords[shipName];
-            Game.validateShipCoords(shipCoordsArr, shipName);
+            Game.validateSingleShipCoords(shipName, shipCoordsArr);
         });
 
         return true;
     }
 
-    static validateShipCoords(shipCoordsArr, shipName) {
+    static validateSingleShipCoords(shipName, shipCoordsArr) {
+        const shipLength = {
+            patrol: 2,
+            destroyer: 3,
+            submarine: 3,
+            battleship: 4,
+            carrier: 5,
+        };
         if (!shipLength[shipName]) throw new Error(`Invalid ship name: ${shipName}!`);
 
         if (shipCoordsArr.length === shipLength[shipName]) {

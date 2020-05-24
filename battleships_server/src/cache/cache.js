@@ -4,32 +4,49 @@ const NodeCache = require('node-cache');
 const ongoingGames = new NodeCache({ useClones: false });
 
 // Cache schema:
+// ongoingGames :
 /* {
-    gameID : {
+    gameID: {
     game: Class Object
-    player1Socket: Socket Object
-    player2Socket: Socket Object
     }
     ...
 }
 */
+// playerData : 
+/* {
+    clientID: {
+        gameID: String, 
+        socket: Socket Object,
+        playerType: String, '1', '2'
+    }
+}
+*/
 
-exports.update = (key, val) => {
-    const cacheData = ongoingGames.get(key);
-    const newObject = { ...cacheData, ...val };
+class Cache {
+    constructor(cacheName) {
+        this.cache = new NodeCache({ useClones: false });
+    }
 
-    ongoingGames.set(key, newObject);
-    return newObject;
-};
+    update(key, val) {
+        const cacheData = ongoingGames.get(key);
+        const newObject = { ...cacheData, ...val };
 
-exports.del = (key) => {
-    ongoingGames.del(key);
-    return true;
-};
+        this.cache.set(key, newObject);
+        return newObject;
+    }
 
-exports.get = (key) => {
-    const data = ongoingGames.get(key);
+    del(key) {
+        this.cache.del(key);
+        return true;
+    }
 
-    if (data === undefined) return false;
-    return data;
-};
+    get(key) {
+        const data = this.cache.get(key);
+
+        if (data === undefined) return false;
+        return data;
+    }
+}
+
+exports.ongoingGamesCache = new Cache('ongoingGames');
+exports.clientsCache = new Cache('clients');
