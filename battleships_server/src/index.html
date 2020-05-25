@@ -29,7 +29,7 @@
           $('#m').val('');
           return false;
         });
-        socket.on('message', function(msg){
+        socket.on('errorMessage', function(msg){
           console.log(msg);
         });
         socket.on('playerType', function(msg){
