@@ -5,8 +5,6 @@ module.exports.Game = class Game {
         this.currentTurn = 'player1';
         this.player1 = '';
         this.player2 = '';
-        this.player1ShipsLeft = 0;
-        this.player2ShipsLeft = 0;
         this.player1ShipCoordinates = {};
         this.player2ShipCoordinates = {};
         this.player1AttackCoordinates = [];
@@ -15,33 +13,40 @@ module.exports.Game = class Game {
 
     getPlayerType(player) {
         let playerType = 'spectator';
-        if (player === this.player1) playerType = 1;
-        else if (player === this.player2) playerType = 2;
+        if (player === this.player1) playerType = 'player1';
+        else if (player === this.player2) playerType = 'player2';
 
         return playerType;
     }
 
     player1AttackPos(point) { // point : [x,y]
         if (Game.pointExistsInArray(point, this.player1AttackCoordinates)) throw (new Error('Coordinate attacked before!'));
-
+        console.log('player1', Game.pointExistsInArray(point, this.player1AttackCoordinates));
         const enemyShipCoords = this.player2ShipCoordinates;
         const keys = Object.keys(enemyShipCoords);
 
-        keys.forEach((shipName) => {
+        let result = null;
+        keys.some((shipName) => {
             const currentShipCoords = enemyShipCoords[shipName];
             // filter out coords already hit
             const remainingShipCoords = Game.filterPointsFromArr(this.player1AttackCoordinates, currentShipCoords);
 
-            const didHitShip = Game.pointExistInArray(point, remainingShipCoords);
+            const didHitShip = Game.pointExistsInArray(point, remainingShipCoords);
 
             if (didHitShip) {
                 if (remainingShipCoords.length === 1) {
-                    this.player1ShipsLeft -= 1;
-                    return { result: 'Hit', sunk: true, ship: shipName, shipCoords: enemyShipCoords[shipName] };
+                    result = { result: 'Hit', sunk: true, ship: shipName, shipCoords: enemyShipCoords[shipName] };
+                    return true;
                 }
-                return { result: 'Hit', sunk: false };
+                result = { result: 'Hit', sunk: false };
+                return true;
             }
+
+            return false;
         });
+
+        this.player1AttackCoordinates.push(point);
+        if (result) return result;
         return { result: 'Miss' };
     }
 
@@ -51,20 +56,27 @@ module.exports.Game = class Game {
         const enemyShipCoords = this.player1ShipCoordinates;
         const keys = Object.keys(enemyShipCoords);
 
+        let result = null;
         keys.forEach((shipName) => {
+            const currentShipCoords = enemyShipCoords[shipName];
             // filter out coords already hit
-            const remainingShipCoords = Game.filterPointsFromArr(this.player2AttackCoordinates, enemyShipCoords);
+            const remainingShipCoords = Game.filterPointsFromArr(this.player2AttackCoordinates, currentShipCoords);
 
-            const didHitShip = Game.pointExistInArray(point, remainingShipCoords);
+            const didHitShip = Game.pointExistsInArray(point, remainingShipCoords);
 
             if (didHitShip) {
                 if (remainingShipCoords.length === 1) {
-                    this.player1ShipsLeft -= 1;
-                    return { result: 'Hit', sunk: true, ship: shipName, shipCoords: enemyShipCoords[shipName] };
+                    result = { result: 'Hit', sunk: true, ship: shipName, shipCoords: enemyShipCoords[shipName] };
+                    return true;
                 }
-                return { result: 'Hit', sunk: false };
+                result = { result: 'Hit', sunk: false };
+                return true;
             }
+            return false;
         });
+
+        this.player2AttackCoordinates.push(point);
+        if (result) return result;
         return { result: 'Miss' };
     }
 
@@ -80,6 +92,32 @@ module.exports.Game = class Game {
             this.player2ShipCoordinates = shipCoords;
             this.player2ShipsLeft = Object.keys(shipCoords).length;
         }
+    }
+
+    hasPlayer1Won() {
+        const ships = Object.keys(this.player1ShipCoordinates);
+
+        let result = true;
+        ships.forEach((shipName) => {
+            // filter out coords already hit
+            const remainingShipCoords = Game.filterPointsFromArr(this.player1AttackCoordinates, this.player2ShipCoordinates[shipName]);
+            if (remainingShipCoords.length !== 0) result = false;
+        });
+
+        return result;
+    }
+
+    hasPlayer2Won() {
+        const ships = Object.keys(this.player2ShipCoordinates);
+
+        let result = true;
+        ships.forEach((shipName) => {
+            // filter out coords already hit
+            const remainingShipCoords = Game.filterPointsFromArr(this.player2AttackCoordinates, this.player1ShipCoordinates[shipName]);
+            if (remainingShipCoords.length !== 0) result = false;
+        });
+
+        return result;
     }
 
     static shipSetupIsValid(shipCoords) {
@@ -117,12 +155,13 @@ module.exports.Game = class Game {
     static pointExistsInArray(point, arr) { // point: [x,y] , arr: [[x1,y1],[x2,y2],...]
         const [x, y] = point;
 
-        arr.forEach((coordinate) => {
+        const result = arr.some((coordinate) => {
             const [comparisonX, comparisonY] = coordinate;
             if (x === comparisonX && y === comparisonY) return true;
+            return false;
         });
 
-        return false;
+        return result;
     }
 
     static filterPointsFromArr(filterArr, sourceArr) {

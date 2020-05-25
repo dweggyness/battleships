@@ -29,7 +29,7 @@
           $('#m').val('');
           return false;
         });
-        socket.on('attackAttempt', function(msg){
+        socket.on('message', function(msg){
           console.log(msg);
         });
       });
