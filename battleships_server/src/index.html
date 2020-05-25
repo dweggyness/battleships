@@ -32,6 +32,12 @@
         socket.on('message', function(msg){
           console.log(msg);
         });
+        socket.on('playerType', function(msg){
+          console.log(msg);
+        });
+        socket.on('gameStream', function(msg){
+          console.log(msg);
+        });
       });
     </script>
   </body>

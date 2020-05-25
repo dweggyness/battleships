@@ -10,12 +10,7 @@ const ongoingGames = new NodeCache({ useClones: false });
         game: Class Object
     }
 }
-// playerData :
-{
-    clientID: {
-        gameID: String,
-    }
-} */
+*/
 
 class Cache {
     constructor() {
@@ -44,4 +39,3 @@ class Cache {
 }
 
 exports.ongoingGamesCache = new Cache();
-exports.clientsCache = new Cache();

@@ -2,7 +2,7 @@
 module.exports.Game = class Game {
     constructor(gameID) { // gameID: int
         this.gameID = gameID;
-        this.currentTurn = 'player1';
+        this.currentTurn = '';
         this.player1 = '';
         this.player2 = '';
         this.player1ShipCoordinates = {};
@@ -21,7 +21,6 @@ module.exports.Game = class Game {
 
     player1AttackPos(point) { // point : [x,y]
         if (Game.pointExistsInArray(point, this.player1AttackCoordinates)) throw (new Error('Coordinate attacked before!'));
-        console.log('player1', Game.pointExistsInArray(point, this.player1AttackCoordinates));
         const enemyShipCoords = this.player2ShipCoordinates;
         const keys = Object.keys(enemyShipCoords);
 

@@ -1,12 +1,12 @@
 
-const { GameService } = require('./services');
+const { UserGameService } = require('./services/UserGameService');
 const { io } = require('./app');
 // TODO : begin using node-cache
 
 exports.setRoutes = async (app) => {
     io.on('connection', (socket) => {
         const clientID = socket.id;
-        const GameHandler = new GameService(io, socket);
+        const GameHandler = new UserGameService(socket);
         console.log('Connected!: ', clientID);
 
         socket.on('disconnect', () => {
@@ -16,16 +16,20 @@ exports.setRoutes = async (app) => {
         socket.on('attackPos', ({ attackPos }) => {
             try {
                 GameHandler.attackPos(attackPos);
+                GameHandler.checkForPlayerVictory();
             } catch (e) {
-                GameHandler.handleError(e);
+                GameHandler.handleError(e.message);
             }
         });
 
         socket.on('startGame', ({ gameID, shipCoords }) => {
             try {
                 GameHandler.setupGame(gameID, shipCoords);
+                if (GameHandler.isGameInstanceReady()) {
+                    GameHandler.startGame();
+                }
             } catch (e) {
-                GameHandler.handleError(e);
+                GameHandler.handleError(e.message);
             }
         });
     });
