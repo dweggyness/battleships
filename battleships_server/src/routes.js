@@ -1,4 +1,5 @@
 
+const { uuid } = require('uuidv4');
 const { Game } = require('./services/Game');
 const { io } = require('./app');
 const { ongoingGamesCache, clientsCache } = require('./cache/cache');
@@ -6,43 +7,62 @@ const { ongoingGamesCache, clientsCache } = require('./cache/cache');
 
 exports.setRoutes = async (app) => {
     io.on('connection', (socket) => {
-        console.log('Connected!');
+        const clientID = uuid();
+        console.log('Connected!: ', clientID);
         socket.on('disconnect', () => {
             console.log('user disconnected');
         });
 
-        socket.on('chat message', (msg) => {
-            console.log('Received: ', msg);
-            socket.broadcast.emit('chat message', msg);
-        });
+        socket.on('attackPos', ({ client, attackPos }) => {
+            console.log('crack : ', clientsCache.get(client));
+            const { gameID: curGameID } = clientsCache.get(client);
+            console.log('Attack Pos, client: ', client, ' ', curGameID);
+            const { game } = ongoingGamesCache.get(curGameID);
 
-        socket.on('attackPos', ({ clientID, attackPos }) => {
-            // TODO : From clientID, find the game that the user is in, and if they're p1 or p2
-            console.log('wahc');
+            let result = '';
+            const playerType = game.getPlayerType(clientID);
+            if (playerType === 1) {
+                result = game.player1AttackPos(attackPos);
+            } else if (playerType === 2) {
+                result = game.player2AttackPos(attackPos);
+            }
+            
+            console.log(typeof result, result);
+            io.in(curGameID).emit('attackAttempt', { player: playerType, attackPos, result });
         });
 
         socket.on('startGame', ({ gameID, shipCoords }) => {
             const existingGameInstance = ongoingGamesCache.get(gameID);
             if (existingGameInstance) {
-                const { game } = existingGameInstance;
-                game.player2SetupShips(shipCoords);
                 socket.join(gameID);
-                console.log('Existing game found');
+                const { game } = existingGameInstance;
+
+                game.player2SetupShips(shipCoords);
+                game.player2 = clientID;
                 const gameObject = {
                     game,
                 };
-                console.log((ongoingGamesCache.update(gameID, gameObject)));
+                ongoingGamesCache.update(gameID, gameObject);
             } else {
-                console.log('New game made at ', gameID);
+                socket.join(gameID);
                 const game = new Game(gameID);
+
+                game.player1 = clientID;
                 game.player1SetupShips(shipCoords);
                 const gameObject = {
                     game,
-                    player1Socket: socket,
                 };
-                socket.join(gameID);
                 ongoingGamesCache.update(gameID, gameObject);
             }
+
+            const clientObject = {
+                gameID,
+            };
+            clientsCache.update(clientID, clientObject);
+
+            console.log(clientsCache.get(clientID));
+            console.log(ongoingGamesCache.get(gameID));
+            socket.emit('message', { client: clientID, playerType: 1 });
         });
     });
 
@@ -52,29 +72,13 @@ exports.setRoutes = async (app) => {
     return app;
 };
 
-// app.post('/startGame/:id', (req, res) => {
-//     const id = req.params.id || 1;
-//     // TODO Only create new game instance if tehre isn't already one
-//     const gameInstance = new Game(id);
-//     // If game instance available, attempt to join it as player2
-//     // TODO Return authentication token?
-
-//     const cacheObject = {
-//         [id]: gameInstance,
-//     };
-//     cache.set('games', cacheObject);
-//     console.log(cache.get('games'));
-//     // const clients = cache.get('clientID');
-//     // When client closes connection we update the clients list
-//     // avoiding the disconnected one
-//     req.on('close', () => {
-//         console.log(' Connection closed');
-//     });
-// });
-
 /* socket.emit('startGame', { gameID: 1, shipCoords: {
 patrol: [[1,1],[1,2]], destroyer: [[1,3],[1,4],[1,5]],
 submarine: [[5,3],[4,3],[4,4]], battleship: [[3,3],[4,4],[5,5],[3,3]],
 carrier: [[3,3],[4,4],[5,5],[3,3],[4,4]]
 }});
+*/
+
+/*
+socket.emit('attackPos', { client: , attackPos: [7,7] })
 */

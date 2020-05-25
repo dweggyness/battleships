@@ -3,27 +3,22 @@ const NodeCache = require('node-cache');
 
 const ongoingGames = new NodeCache({ useClones: false });
 
-// Cache schema:
+/* Cache schema:
 // ongoingGames :
-/* {
+{
     gameID: {
-    game: Class Object
+        game: Class Object
     }
-    ...
 }
-*/
-// playerData : 
-/* {
+// playerData :
+{
     clientID: {
-        gameID: String, 
-        socket: Socket Object,
-        playerType: String, '1', '2'
+        gameID: String,
     }
-}
-*/
+} */
 
 class Cache {
-    constructor(cacheName) {
+    constructor() {
         this.cache = new NodeCache({ useClones: false });
     }
 
@@ -48,5 +43,5 @@ class Cache {
     }
 }
 
-exports.ongoingGamesCache = new Cache('ongoingGames');
-exports.clientsCache = new Cache('clients');
+exports.ongoingGamesCache = new Cache();
+exports.clientsCache = new Cache();
