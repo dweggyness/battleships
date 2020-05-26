@@ -5,7 +5,10 @@
         "es6": true,
         "node": true
     },
-    "extends": "airbnb-base",
+    "extends": [
+        "eslint:recommended",
+        "airbnb-base"
+    ],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
