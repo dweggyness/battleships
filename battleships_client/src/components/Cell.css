@@ -1,0 +1,15 @@
+
+.cell {
+    background-color: gray;
+    width: 40px;
+    height: 40px;
+    border: 2px solid black;
+}
+
+.cell + .cell {
+    border-left: 0;
+}
+
+.board:nth-child(n + 2) .cell {
+    border-top: 0;
+}
