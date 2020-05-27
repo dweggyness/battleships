@@ -4,14 +4,17 @@ import './Board.css';
 
 const Board = (props) => {
     const { onCellAttack, board } = props;
-    
+
     const getCellColor = (x,y) => {
-        const { hit, sunk } = board[y][x];
-        if (sunk) return 'darkred';
-        if (hit === 'ship') return 'red';
-        if (hit === 'miss') return 'darkgray';
-        return 'gray';
-    }
+        const { hit, sunk, hasPlayerShip } = board[y][x];
+
+        let cellColor = 'gray';
+        if (sunk) cellColor = 'darkred';
+        if (hit === 'ship') cellColor = 'red';
+        if (hit === 'miss') cellColor = 'darkgray';
+        if (hasPlayerShip) cellColor = 'blue';
+        return cellColor;
+    };
 
     return (
         <div>
