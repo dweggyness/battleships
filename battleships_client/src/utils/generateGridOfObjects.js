@@ -1,12 +1,12 @@
 
-export default function (width, height) {
-    const yAxisArr = [];
-    for (let y = 0; y < height; y += 1) {
-        const xAxisArr = [];
-        for (let x = 0; x < width; x += 1) {
-            xAxisArr.push({});
+export default function (gridSize) {
+    const xAxisArr = [];
+    for (let y = 0; y < gridSize; y += 1) {
+        const yAxisArr = [];
+        for (let x = 0; x < gridSize; x += 1) {
+            yAxisArr.push({});
         }
-        yAxisArr.push(xAxisArr);
+        xAxisArr.push(yAxisArr);
     }
-    return yAxisArr;
+    return xAxisArr;
 }
