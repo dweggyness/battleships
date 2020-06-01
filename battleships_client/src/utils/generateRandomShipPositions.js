@@ -1,6 +1,6 @@
 
-import isPointWithinBounds from './isPointWithinBounds';
 import isShipPositionValid from './isShipPositionValid';
+import buildShipCoords from './buildShipCoords';
 
 const shipObject = {
     patrol: 2,
@@ -12,28 +12,22 @@ const shipObject = {
 
 export default function (gridSize) {
     const shipCoords = {};
-    const directions = ['h', 'v']
+    const directions = ['horizontal', 'vertical'];
     const shipNames = Object.keys(shipObject);
     shipNames.forEach((ship) => {
         const shipLength = shipObject[ship];
         let iterations = 0;
-        while ( iterations < 10000) {
+        while (iterations < 10000) {
             iterations++;
             const randomXCoord = Math.floor(Math.random() * 10);
             const randomYCoord = Math.floor(Math.random() * 10);
             const randomDirection = directions[Math.floor(Math.random() * 2)];
 
-            const curShipCoords = [[randomXCoord, randomYCoord]];
-            for ( let i = 1; i < shipLength; i++ ) {
-                if (randomDirection === 'h') {
-                    const nextCoord = [curShipCoords[i - 1][0] + 1, randomYCoord];
-                    curShipCoords.push(nextCoord);
-                }
-                if (randomDirection === 'v') {
-                    const nextCoord = [randomXCoord, curShipCoords[i - 1][1] + 1];
-                    curShipCoords.push(nextCoord);
-                }
-            }
+            const curShipCoords = buildShipCoords({
+                point: [randomXCoord, randomYCoord],
+                layout: randomDirection,
+                length: shipLength,
+            });
 
             if (isShipPositionValid(curShipCoords, shipCoords)) {
                 shipCoords[ship] = curShipCoords;

@@ -13,12 +13,14 @@ const Game = () => {
     const [headerMessage, setHeaderMessage] = useState('Waiting for opponent...');
     const playerType = useRef();
 
-    console.log('final', playerShipCoords);
-
     const startGame = () => {
         socket.emit('startGame', { gameID: 1,
             shipCoords: playerShipCoords,
         });
+    };
+
+    const handlePlayerShipCoordsChange = (newCoords) => {
+        setPlayerShipCoords({ ...newCoords });
     };
 
     useEffect(() => {
@@ -88,7 +90,13 @@ const Game = () => {
 
     return (
         <div>
-            <Board isPlayer onCellAttack={onCellAttack} playerShipCoords={playerShipCoords} board={playerBoardState}/>
+            <Board
+                isPlayer
+                onCellAttack={onCellAttack}
+                playerShipCoords={playerShipCoords}
+                board={playerBoardState}
+                handlePlayerShipCoordsChange={handlePlayerShipCoordsChange}
+            />
             <div style={{ height: '50px' }}></div>
             <span>{headerMessage}</span>
             <Board onCellAttack={onCellAttack} playerShipCoords={playerShipCoords} board={enemyBoardState}/>
