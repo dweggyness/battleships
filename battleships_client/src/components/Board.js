@@ -7,7 +7,7 @@ import PlayerShip from './PlayerShip';
 import './Board.css';
 
 const Board = (props) => {
-    const { handleShipCoordsChange, changeShipPos, shipCoords, onCellAttack = () => {}, board } = props;
+    const { areShipsMovable, handleShipCoordsChange, shipCoords, onCellAttack = () => {}, board } = props;
     const [_board, _setBoard] = useState();
 
     useEffect(() => {
@@ -25,23 +25,6 @@ const Board = (props) => {
         _setBoard(tempBoard);
     }, [shipCoords, board]);
 
-    const getCellColor = (x, y) => {
-        const { hit, sunk, dragOver } = board[x][y];
-
-        return 'transparent';
-
-        let cellColor = 'gray';
-        if (sunk) cellColor = 'darkred';
-        if (hit === 'ship') cellColor = 'red';
-        if (hit === 'miss') cellColor = 'darkgray';
-        if (dragOver) cellColor = 'green';
-        return cellColor;
-    };
-
-    const changeShipPosition = (shipName, shipPos) => {
-        changeShipPos(shipName, shipPos);
-    };
-
     if (!_board) return null;
 
     return (
@@ -54,8 +37,8 @@ const Board = (props) => {
                             point={[cell.x, cell.y]}
                             hit={cell.hit}
                             shipInCell={cell.ship}
-                            backgroundColor={getCellColor(cell.x, cell.y)}
                             onClick={() => onCellAttack(cell.x, cell.y)}
+                            areShipsMovable={areShipsMovable}
                             handleShipCoordsChange={handleShipCoordsChange}
                             shipCoords={shipCoords}
                         />
@@ -68,9 +51,7 @@ const Board = (props) => {
 };
 
 Board.propTypes = {
-    isPlayer: PropTypes.bool,
     playerShipCoords: PropTypes.object,
-    changeShipPos: PropTypes.func,
     onCellAttack: PropTypes.func,
     board: PropTypes.array,
 };

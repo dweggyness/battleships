@@ -92,6 +92,7 @@ const Game = () => {
     return (
         <div>
             <Board
+                areShipsMovable={true}
                 shipCoords={playerShipCoords}
                 board={playerBoardState}
                 handleShipCoordsChange={handlePlayerShipCoordsChange}
@@ -99,7 +100,7 @@ const Game = () => {
             <div style={{ height: '50px' }}></div>
             <span>{headerMessage}</span>
             <Board
-                shipCoords={playerShipCoords}
+                shipCoords={{ submarine: [[1, 2], [1, 3], [1, 4]] }}
                 onCellAttack={onCellAttack}
                 board={enemyBoardState}
             />

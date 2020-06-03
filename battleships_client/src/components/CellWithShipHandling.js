@@ -7,13 +7,14 @@ import Cell from './Cell';
 import './Cell.css';
 
 const CellWithShipHandling = (props) => {
-    const { handleShipCoordsChange, point, shipInCell, backgroundColor, shipCoords } = props;
+    const { areShipsMovable = false, handleShipCoordsChange = () => {}, point, shipInCell, shipCoords } = props;
     const [{ isPointerOver, isLegalMove, movingShip }, drop] = useDrop({
         accept: 'ship',
         drop: ({ ship }) => {
             updateShipCoordinates(ship);
         },
         canDrop: ({ ship }) => {
+            if (!areShipsMovable) return false;
             return isShipValidAtThisPosition(ship);
         },
         collect: (monitor) => ({
@@ -53,6 +54,7 @@ const CellWithShipHandling = (props) => {
         && <PlayerShip
             ship={shipObject.ship}
             onShipRotate={onShipRotate}
+            areShipsMovable={areShipsMovable}
             hovering={shipObject.hovering}
         />}
     </Cell>;

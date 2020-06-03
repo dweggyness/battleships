@@ -4,9 +4,12 @@ import { useDrag } from 'react-dnd';
 import './Cell.css';
 
 const PlayerShip = (props) => {
-    const { hovering, onShipRotate, ship } = props;
+    const { areShipsMovable = false, hovering, onShipRotate = () => {}, ship } = props;
     const [{ isDragging }, drag] = useDrag({
         item: { type: 'ship', ship },
+        canDrag: () => {
+            return areShipsMovable;
+        },
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),
