@@ -4,6 +4,7 @@ import Board from '../components/Board';
 import { generateGridOfObjects } from '../utils';
 import generateRandomShipPositions from '../utils/generateRandomShipPositions';
 
+
 const socket = io('http://localhost:8080');
 
 const Game = () => {
@@ -91,15 +92,17 @@ const Game = () => {
     return (
         <div>
             <Board
-                isPlayer
-                onCellAttack={onCellAttack}
                 playerShipCoords={playerShipCoords}
                 board={playerBoardState}
                 handlePlayerShipCoordsChange={handlePlayerShipCoordsChange}
             />
             <div style={{ height: '50px' }}></div>
             <span>{headerMessage}</span>
-            <Board onCellAttack={onCellAttack} playerShipCoords={playerShipCoords} board={enemyBoardState}/>
+            <Board
+                playerShipCoords={playerShipCoords}
+                onCellAttack={onCellAttack}
+                board={enemyBoardState}
+            />
             <p>Game PAGE</p>
             <button style={{ height: 50, width: 100 }} onClick={startGame}> Start the Game</button>
         </div>

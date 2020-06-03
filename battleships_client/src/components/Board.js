@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import Cell from './Cell';
+import CellWithPlayerShipHandling from './CellWithPlayerShipHandling';
 import PlayerShip from './PlayerShip';
 import './Board.css';
 
 const Board = (props) => {
-    const { handlePlayerShipCoordsChange, isPlayer, changeShipPos, playerShipCoords, onCellAttack, board } = props;
+    const { handlePlayerShipCoordsChange, changeShipPos, playerShipCoords, onCellAttack = () => {}, board } = props;
     const [_board, _setBoard] = useState();
 
     useEffect(() => {
@@ -46,24 +46,23 @@ const Board = (props) => {
 
     return (
         <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
-            <table className={'grid'}>
+            <table className={'grid'}><tbody>
                 {_board.map((row) => (<tr className={'board'} key={row[0].x + row[0].y * 1000}>
                     {row.map((cell) => (
-                        <Cell
+                        <CellWithPlayerShipHandling
+                            key={cell.x + cell.y * 10}
                             point={[cell.x, cell.y]}
                             hit={cell.hit}
+                            shipInCell={cell.ship}
                             backgroundColor={getCellColor(cell.x, cell.y)}
                             onClick={() => onCellAttack(cell.x, cell.y)}
                             handlePlayerShipCoordsChange={handlePlayerShipCoordsChange}
                             playerShipCoords={playerShipCoords}
-                            key={cell.x + cell.y * 10}
-                        >
-                            <PlayerShip addShip={addShip} removeShip={removeShip} ship={cell.ship} />
-                        </Cell>
+                        />
                     ))}
                 </tr>
                 ))}
-            </table>
+            </tbody></table>
         </DndProvider>
     );
 };

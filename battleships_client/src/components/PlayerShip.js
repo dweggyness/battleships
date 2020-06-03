@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import buildShipCoords from '../utils/buildShipCoords';
 import './Cell.css';
 
 const PlayerShip = (props) => {
-    const { hovering, ship } = props;
+    const { hovering, onShipRotate, ship } = props;
     const [{ isDragging }, drag] = useDrag({
         item: { type: 'ship', ship },
         collect: (monitor) => ({
@@ -13,7 +12,7 @@ const PlayerShip = (props) => {
         }),
     });
 
-    if (!ship || isDragging) return null;
+    if (!hovering && isDragging) return null;
 
     let height = 1.5;
     let width = 1.5;
@@ -30,15 +29,16 @@ const PlayerShip = (props) => {
         height: `${height}em`,
 
         position: 'absolute',
-        backgroundColor: hovering ? 'rgba(255, 255, 0, 1)' : 'rgba(0, 0, 255, 0.1)',
+        backgroundColor: hovering ? 'rgba(255, 200, 0, 0.3)' : 'rgba(0, 0, 255, 0.1)',
         borderRadius: '10px',
-        border: hovering ? '2px solid yellow' : '2px solid blue',
+        border: hovering ? '2px solid orange' : '2px solid blue',
         margin: '2.25px 0 0 2.25px',
     };
 
     return <div
         ref={drag}
         style={style}
+        onClick={onShipRotate}
     />;
 };
 
