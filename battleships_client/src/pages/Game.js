@@ -92,14 +92,14 @@ const Game = () => {
     return (
         <div>
             <Board
-                playerShipCoords={playerShipCoords}
+                shipCoords={playerShipCoords}
                 board={playerBoardState}
-                handlePlayerShipCoordsChange={handlePlayerShipCoordsChange}
+                handleShipCoordsChange={handlePlayerShipCoordsChange}
             />
             <div style={{ height: '50px' }}></div>
             <span>{headerMessage}</span>
             <Board
-                playerShipCoords={playerShipCoords}
+                shipCoords={playerShipCoords}
                 onCellAttack={onCellAttack}
                 board={enemyBoardState}
             />

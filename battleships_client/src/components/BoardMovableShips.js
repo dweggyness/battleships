@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import CellWithShipHandling from './CellWithShipHandling';
-import PlayerShip from './PlayerShip';
 import './Board.css';
 
 const Board = (props) => {
-    const { handleShipCoordsChange, changeShipPos, shipCoords, onCellAttack = () => {}, board } = props;
+    const { handlePlayerShipCoordsChange, shipCoords, board } = props;
     const [_board, _setBoard] = useState();
 
     useEffect(() => {
@@ -25,23 +24,6 @@ const Board = (props) => {
         _setBoard(tempBoard);
     }, [shipCoords, board]);
 
-    const getCellColor = (x, y) => {
-        const { hit, sunk, dragOver } = board[x][y];
-
-        return 'transparent';
-
-        let cellColor = 'gray';
-        if (sunk) cellColor = 'darkred';
-        if (hit === 'ship') cellColor = 'red';
-        if (hit === 'miss') cellColor = 'darkgray';
-        if (dragOver) cellColor = 'green';
-        return cellColor;
-    };
-
-    const changeShipPosition = (shipName, shipPos) => {
-        changeShipPos(shipName, shipPos);
-    };
-
     if (!_board) return null;
 
     return (
@@ -56,8 +38,8 @@ const Board = (props) => {
                             shipInCell={cell.ship}
                             backgroundColor={getCellColor(cell.x, cell.y)}
                             onClick={() => onCellAttack(cell.x, cell.y)}
-                            handleShipCoordsChange={handleShipCoordsChange}
-                            shipCoords={shipCoords}
+                            handlePlayerShipCoordsChange={handlePlayerShipCoordsChange}
+                            playerShipCoords={playerShipCoords}
                         />
                     ))}
                 </tr>
