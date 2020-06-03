@@ -1,41 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
+import buildShipCoords from '../utils/buildShipCoords';
 import './Cell.css';
 
 const PlayerShip = (props) => {
-    const { destroyed, ship } = props;
-    const [, drag] = useDrag({
+    const { hovering, ship } = props;
+    const [{ isDragging }, drag] = useDrag({
         item: { type: 'ship', ship },
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging(),
+        }),
     });
 
-    if (!ship) return null;
+    if (!ship || isDragging) return null;
 
     let height = 1.5;
     let width = 1.5;
-    let paddingRight = 0;
-    let paddingBottom = 0;
 
     const { layout, length } = ship;
     if (layout === 'horizontal') {
-        width += (length - 1) * 2;
-        paddingRight = `${3 * length}px`;
+        width += (length - 1) * 2.125;
     } else if (layout === 'vertical') {
-        height += (length - 1) * 2;
-        paddingBottom = `${3 * length}px`;
+        height += (length - 1) * 2.125;
     }
 
     const style = {
         width: `${width}em`,
         height: `${height}em`,
-        paddingRight,
-        paddingBottom,
 
         position: 'absolute',
-        backgroundColor: destroyed ? 'rgba(255, 0 ,0 , 0.1)' : 'rgba(0, 0, 255, 0.1)',
+        backgroundColor: hovering ? 'rgba(255, 255, 0, 1)' : 'rgba(0, 0, 255, 0.1)',
         borderRadius: '10px',
-        border: destroyed ? '2px solid red' : '2px solid blue',
-        margin: '2px 0 0 2px',
+        border: hovering ? '2px solid yellow' : '2px solid blue',
+        margin: '2.25px 0 0 2.25px',
     };
 
     return <div

@@ -1,5 +1,7 @@
 
 .cell {
+    border: 1px solid #5e5e5e;
+    border-collapse: collapse;
     background-color: red;
     width: 2em;
     height: 2em;
@@ -7,7 +9,5 @@
 }
 
 .battleship-cell {
-    border: 1px solid #5e5e5e;
-    width: 2em;
-    height: 2em;
+    padding: 0;
 }

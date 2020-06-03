@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd';
-import { TouchBackend } from 'react-dnd-touch-backend'
+import { TouchBackend } from 'react-dnd-touch-backend';
 import Cell from './Cell';
 import PlayerShip from './PlayerShip';
 import './Board.css';
@@ -19,10 +19,9 @@ const Board = (props) => {
             const curShip = playerShipCoords[shipName];
             const shipCoord = [curShip[0][0], curShip[0][1]];
             const shipLayout = curShip[1][0] !== curShip[0][0] ? 'horizontal' : 'vertical';
-            const tempBoardData = tempBoard[curShip[0][0]][curShip[0][1]];
+            const tempBoardData = tempBoard[curShip[0][1]][curShip[0][0]];
             tempBoard[shipCoord[1]][shipCoord[0]] = { ...tempBoardData, ship: { shipName, layout: shipLayout, length: curShip.length } };
         });
-        console.log(tempBoard);
         _setBoard(tempBoard);
     }, [playerShipCoords, board]);
 
@@ -48,19 +47,19 @@ const Board = (props) => {
     return (
         <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
             <table className={'grid'}>
-                {_board.map((row, y) => (<tr className={'board'} key={row[0].x + row[0].y * 1000}>
-                    {row.map((cell, x) => (<td className={'battleship-cell'} key={cell.x + cell.y * 10}>
+                {_board.map((row) => (<tr className={'board'} key={row[0].x + row[0].y * 1000}>
+                    {row.map((cell) => (
                         <Cell
-                            point={[x, y]}
+                            point={[cell.x, cell.y]}
                             hit={cell.hit}
-                            backgroundColor={getCellColor(x, y)}
-                            onClick={() => onCellAttack(x, y)}
+                            backgroundColor={getCellColor(cell.x, cell.y)}
+                            onClick={() => onCellAttack(cell.x, cell.y)}
                             handlePlayerShipCoordsChange={handlePlayerShipCoordsChange}
                             playerShipCoords={playerShipCoords}
+                            key={cell.x + cell.y * 10}
                         >
-                            <PlayerShip ship={cell.ship} />
+                            <PlayerShip addShip={addShip} removeShip={removeShip} ship={cell.ship} />
                         </Cell>
-                    </td>
                     ))}
                 </tr>
                 ))}

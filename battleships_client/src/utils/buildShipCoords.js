@@ -5,7 +5,7 @@
 
 export default function ({ point, layout, length }) {
     const tempArray = [point];
-    for ( let i = 1; i < length; i++ ) {
+    for (let i = 1; i < length; i++) {
         if (layout === 'horizontal') {
             const nextCoord = [tempArray[i - 1][0] + 1, point[1]];
             tempArray.push(nextCoord);
