@@ -2,13 +2,13 @@ import React from 'react';
 import { useDrop } from 'react-dnd';
 import isShipPositionValid from '../utils/isShipPositionValid';
 import buildShipCoords from '../utils/buildShipCoords';
-import PlayerShip from './PlayerShip';
+import Battleship from './Battleship';
 import Cell from './Cell';
 import './Cell.css';
 
 const CellWithShipHandling = (props) => {
-    const { areShipsMovable = false, handleShipCoordsChange = () => {}, point, shipInCell, shipCoords } = props;
-    const [{ isPointerOver, isLegalMove, movingShip }, drop] = useDrop({
+    const { areShipsMovable = false, handleShipCoordsChange = () => {}, point, sunk, shipInCell, shipCoords } = props;
+    const [{ isPointerOver, isLegalMove, hoveringShip }, drop] = useDrop({
         accept: 'ship',
         drop: ({ ship }) => {
             updateShipCoordinates(ship);
@@ -18,7 +18,7 @@ const CellWithShipHandling = (props) => {
             return isShipValidAtThisPosition(ship);
         },
         collect: (monitor) => ({
-            movingShip: monitor.getItem(),
+            hoveringShip: monitor.getItem(),
             isPointerOver: monitor.isOver(),
             isLegalMove: monitor.canDrop(),
         }),
@@ -26,7 +26,7 @@ const CellWithShipHandling = (props) => {
 
     let shipObject = null;
     if (shipInCell) shipObject = { ship: shipInCell };
-    if (isPointerOver && isLegalMove) shipObject = { ship: movingShip.ship, hovering: true };
+    if (isPointerOver && isLegalMove) shipObject = { ship: hoveringShip.ship, hovering: true };
 
     const isShipValidAtThisPosition = (ship) => {
         const { shipName, layout, length } = ship;
@@ -43,7 +43,7 @@ const CellWithShipHandling = (props) => {
         handleShipCoordsChange(newShipCoords);
     };
 
-    const onShipRotate = () => {
+    const handleShipRotate = () => {
         const { layout } = shipObject.ship;
         const newShipObject = { ...shipObject.ship, layout: layout === 'horizontal' ? 'vertical' : 'horizontal' };
         if (isShipValidAtThisPosition(newShipObject)) updateShipCoordinates(newShipObject);
@@ -51,9 +51,10 @@ const CellWithShipHandling = (props) => {
 
     return <Cell ref={drop} {...props}>
         {shipObject
-        && <PlayerShip
+        && <Battleship
             ship={shipObject.ship}
-            onShipRotate={onShipRotate}
+            sunk={sunk}
+            handleShipRotate={handleShipRotate}
             areShipsMovable={areShipsMovable}
             hovering={shipObject.hovering}
         />}

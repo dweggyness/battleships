@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import CellWithShipHandling from './CellWithShipHandling';
-import PlayerShip from './PlayerShip';
+import isShipSunk from '../utils/isShipSunk';
 import './Board.css';
 
 const Board = (props) => {
@@ -15,6 +15,7 @@ const Board = (props) => {
         const ship = Object.keys(shipCoords);
         // deep cloning the nested array
         const tempBoard = JSON.parse(JSON.stringify(board));
+        console.log(board, shipCoords);
         ship.forEach((shipName) => {
             const curShip = shipCoords[shipName];
             const shipCoord = [curShip[0][0], curShip[0][1]];
@@ -35,7 +36,9 @@ const Board = (props) => {
                         <CellWithShipHandling
                             key={cell.x + cell.y * 10}
                             point={[cell.x, cell.y]}
-                            hit={cell.hit}
+
+                            sunk={cell.ship && isShipSunk(shipCoords[cell.ship.shipName], board)}
+                            hitState={cell.hit}
                             shipInCell={cell.ship}
                             onClick={() => onCellAttack(cell.x, cell.y)}
                             areShipsMovable={areShipsMovable}
@@ -51,7 +54,7 @@ const Board = (props) => {
 };
 
 Board.propTypes = {
-    playerShipCoords: PropTypes.object,
+    shipCoords: PropTypes.object,
     onCellAttack: PropTypes.func,
     board: PropTypes.array,
 };

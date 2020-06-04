@@ -6,7 +6,7 @@ import CellWithShipHandling from './CellWithShipHandling';
 import './Board.css';
 
 const Board = (props) => {
-    const { handlePlayerShipCoordsChange, shipCoords, board } = props;
+    const { handleShipCoordsChange, shipCoords, board } = props;
     const [_board, _setBoard] = useState();
 
     useEffect(() => {
@@ -38,8 +38,8 @@ const Board = (props) => {
                             shipInCell={cell.ship}
                             backgroundColor={getCellColor(cell.x, cell.y)}
                             onClick={() => onCellAttack(cell.x, cell.y)}
-                            handlePlayerShipCoordsChange={handlePlayerShipCoordsChange}
-                            playerShipCoords={playerShipCoords}
+                            handleShipCoordsChange={handleShipCoordsChange}
+                            shipCoords={shipCoords}
                         />
                     ))}
                 </tr>
@@ -51,7 +51,7 @@ const Board = (props) => {
 
 Board.propTypes = {
     isPlayer: PropTypes.bool,
-    playerShipCoords: PropTypes.object,
+    shipCoords: PropTypes.object,
     changeShipPos: PropTypes.func,
     onCellAttack: PropTypes.func,
     board: PropTypes.array,

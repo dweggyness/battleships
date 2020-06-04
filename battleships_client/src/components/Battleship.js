@@ -3,13 +3,11 @@ import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
 import './Cell.css';
 
-const PlayerShip = (props) => {
-    const { areShipsMovable = false, hovering, onShipRotate = () => {}, ship } = props;
+const Battleship = (props) => {
+    const { areShipsMovable = false, sunk, hovering, handleShipRotate = () => {}, ship } = props;
     const [{ isDragging }, drag] = useDrag({
         item: { type: 'ship', ship },
-        canDrag: () => {
-            return areShipsMovable;
-        },
+        canDrag: () => areShipsMovable,
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),
@@ -21,31 +19,34 @@ const PlayerShip = (props) => {
     let width = 1.5;
 
     const { layout, length } = ship;
-    if (layout === 'horizontal') {
-        width += (length - 1) * 2.125;
-    } else if (layout === 'vertical') {
-        height += (length - 1) * 2.125;
-    }
+    if (layout === 'horizontal') width += (length - 1) * 2.125;
+    else if (layout === 'vertical') height += (length - 1) * 2.125;
+
+    let backgroundColor = 'rgba(0, 0, 255, 0.1)';
+    let border = '2px solid blue';
+
+    if (sunk) { backgroundColor = 'rgba(255, 0, 0, 0.3)'; border = '2px solid red'; }
+    if (hovering) { backgroundColor = 'rgba(255, 200, 0, 0.3)'; border = '2px solid orange'; }
 
     const style = {
         width: `${width}em`,
         height: `${height}em`,
 
         position: 'absolute',
-        backgroundColor: hovering ? 'rgba(255, 200, 0, 0.3)' : 'rgba(0, 0, 255, 0.1)',
+        backgroundColor,
+        border,
         borderRadius: '10px',
-        border: hovering ? '2px solid orange' : '2px solid blue',
         margin: '2.25px 0 0 2.25px',
     };
 
     return <div
         ref={drag}
         style={style}
-        onClick={onShipRotate}
+        onClick={handleShipRotate}
     />;
 };
 
-PlayerShip.propTypes = {
+Battleship.propTypes = {
     destroyed: PropTypes.bool,
     ship: PropTypes.shape({
         point: PropTypes.array,
@@ -55,4 +56,4 @@ PlayerShip.propTypes = {
 };
 
 
-export default PlayerShip;
+export default Battleship;

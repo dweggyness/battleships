@@ -11,6 +11,7 @@ const Game = () => {
     const [playerShipCoords, setPlayerShipCoords] = useState(generateRandomShipPositions(10));
     const [enemyBoardState, setEnemyBoardState] = useState(generateGridOfObjects(10));
     const [playerBoardState, setPlayerBoardState] = useState(generateGridOfObjects(10));
+    const [enemySunkShipCoords, setEnemySunkShipCoords] = useState({});
     const [headerMessage, setHeaderMessage] = useState('Waiting for opponent...');
     const playerType = useRef();
 
@@ -32,25 +33,20 @@ const Game = () => {
             if (player === playerType.current) {
                 setEnemyBoardState((prevBoardState) => {
                     const tempBoardState = [...prevBoardState];
-                    if (result.result === 'Hit') tempBoardState[attackPos[0]][attackPos[1]] = { hit: 'ship' };
-                    else tempBoardState[attackPos[0]][attackPos[1]] = { hit: 'miss' };
+                    const prevData = { ...tempBoardState[attackPos[1]][attackPos[0]] };
+                    if (result.result === 'Hit') tempBoardState[attackPos[1]][attackPos[0]] = { ...prevData, hit: 'ship' };
+                    else tempBoardState[attackPos[1]][attackPos[0]] = { ...prevData, hit: 'miss' };
                     if (result.ship) { // sunk ship
-                        playerShipCoords[result.ship].forEach((shipCoord) => {
-                            tempBoardState[shipCoord[0]][shipCoord[1]] = { sunk: true };
-                        });
+                        setEnemySunkShipCoords((prevCoords) => ({ ...prevCoords, [result.ship]: result.shipCoords }));
                     }
                     return tempBoardState;
                 });
             } else if (player) {
                 setPlayerBoardState((prevBoardState) => {
                     const tempBoardState = [...prevBoardState];
-                    if (result.result === 'Hit') tempBoardState[attackPos[0]][attackPos[1]] = { hit: 'ship' };
-                    else tempBoardState[attackPos[0]][attackPos[1]] = { hit: 'miss' };
-                    if (result.ship) { // sunk ship
-                        playerShipCoords[result.ship].forEach((shipCoord) => {
-                            tempBoardState[shipCoord[0]][shipCoord[1]] = { sunk: true };
-                        });
-                    }
+                    const prevData = { ...tempBoardState[attackPos[1]][attackPos[0]] };
+                    if (result.result === 'Hit') tempBoardState[attackPos[1]][attackPos[0]] = { ...prevData, hit: 'ship' };
+                    else tempBoardState[attackPos[1]][attackPos[0]] = { ...prevData, hit: 'miss' };
                     return tempBoardState;
                 });
             }
@@ -100,7 +96,7 @@ const Game = () => {
             <div style={{ height: '50px' }}></div>
             <span>{headerMessage}</span>
             <Board
-                shipCoords={{ submarine: [[1, 2], [1, 3], [1, 4]] }}
+                shipCoords={enemySunkShipCoords}
                 onCellAttack={onCellAttack}
                 board={enemyBoardState}
             />
