@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 
 const Cross = styled.span`
@@ -28,6 +29,10 @@ const Cross = styled.span`
 const XCross = (props) => {
     const { color } = props;
     return <Cross color={color} />;
+};
+
+XCross.propTypes = {
+    color: PropTypes.string,
 };
 
 export default XCross;

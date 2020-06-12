@@ -1,19 +1,33 @@
 import React, { useRef, useState, useEffect } from 'react';
 import io from 'socket.io-client';
+import { Link } from 'react-router-dom';
+import styled from '@emotion/styled';
 import Board from '../components/Board';
+import Logo from '../assets/icon.png';
+
 import { generateGridOfObjects } from '../utils';
 import generateRandomShipPositions from '../utils/generateRandomShipPositions';
 
 
 const socket = io('http://localhost:8080');
 
+const HeaderBar = styled.div`
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 2px solid #333;
+`;
+
 const Game = () => {
     const [playerShipCoords, setPlayerShipCoords] = useState(generateRandomShipPositions(10));
     const [enemyBoardState, setEnemyBoardState] = useState(generateGridOfObjects(10));
     const [playerBoardState, setPlayerBoardState] = useState(generateGridOfObjects(10));
+    const [playerType, setPlayerType] = useState();
     const [enemySunkShipCoords, setEnemySunkShipCoords] = useState({});
     const [headerMessage, setHeaderMessage] = useState('Waiting for opponent...');
-    const playerType = useRef();
+    const [isGameInProgress, setIsGameInProgress] = useState(false);
 
     const startGame = () => {
         socket.emit('startGame', { gameID: 1,
@@ -28,9 +42,9 @@ const Game = () => {
     useEffect(() => {
         socket.on('gameStream', (msg) => {
             const { player, nextPlayer, attackPos, result, winner } = msg;
-            console.log(msg, nextPlayer, playerType.current);
 
-            if (player === playerType.current) {
+            console.log('msg', msg);
+            if (player === playerType) {
                 setEnemyBoardState((prevBoardState) => {
                     const tempBoardState = [...prevBoardState];
                     const prevData = { ...tempBoardState[attackPos[1]][attackPos[0]] };
@@ -51,11 +65,12 @@ const Game = () => {
                 });
             }
 
-            if (winner === playerType.current) {
+            if (winner === playerType) {
+                setIsGameInProgress(false);
                 console.log('Winner get!');
             }
 
-            if (nextPlayer === playerType.current) {
+            if (nextPlayer === playerType) {
                 setHeaderMessage('Your turn!');
             } else {
                 setHeaderMessage('Opponent turn');
@@ -63,8 +78,8 @@ const Game = () => {
         });
 
         socket.on('playerType', (msg) => {
-            console.log('d', msg);
-            playerType.current = msg.player;
+            setIsGameInProgress(true);
+            setPlayerType(msg.player);
         });
 
         socket.on('errorMessage', (msg) => {
@@ -76,33 +91,45 @@ const Game = () => {
             socket.off('playerType');
             socket.off('errorMessage');
         };
-    }, [playerShipCoords]);
+    }, [playerShipCoords, playerType]);
 
     const onCellAttack = (x, y) => {
-        console.log([x, y]);
         socket.emit('attackPos', { attackPos: [x, y] });
     };
 
     if (!playerBoardState || !enemyBoardState) return null;
 
     return (
-        <div>
-            <Board
-                areShipsMovable={true}
-                shipCoords={playerShipCoords}
-                board={playerBoardState}
-                handleShipCoordsChange={handlePlayerShipCoordsChange}
-            />
-            <div style={{ height: '50px' }}></div>
-            <span>{headerMessage}</span>
-            <Board
-                shipCoords={enemySunkShipCoords}
-                onCellAttack={onCellAttack}
-                board={enemyBoardState}
-            />
-            <p>Game PAGE</p>
-            <button style={{ height: 50, width: 100 }} onClick={startGame}> Start the Game</button>
-        </div>
+        <>
+            <HeaderBar>
+                <Link style={{ margin: 10, height: '100%', textDecoration: 'none', alignItems: 'center', display: 'flex', flexDirection: 'row' }} to="/">
+                    <img style={{ margin: '10%', height: '90%' }} src={Logo} alt='battleship logo' />
+                    Waterbound Fighting Vessels
+                </Link>
+            </HeaderBar>
+            <div style={{ display: 'flex', flexDirection: 'row', marginTop: 25 }}>
+                <div style={{ display: 'flex', flex: 2, justifyContent: 'flex-end', padding: 25 }}>
+                    <Board
+                        areShipsMovable={!isGameInProgress}
+                        shipCoords={playerShipCoords}
+                        board={playerBoardState}
+                        handleShipCoordsChange={handlePlayerShipCoordsChange}
+                    />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', padding: 25 }}>
+                    <span>{headerMessage}</span>
+                    <button style={{ height: 50, width: 100 }} onClick={startGame}> Start Game</button>
+                </div>
+                <div style={{ flex: 2, padding: 25 }} >
+                    <Board
+                        areShipsMovable={false}
+                        shipCoords={enemySunkShipCoords}
+                        onCellAttack={onCellAttack}
+                        board={enemyBoardState}
+                    />
+                </div>
+            </div>
+        </>
     );
 };
 
