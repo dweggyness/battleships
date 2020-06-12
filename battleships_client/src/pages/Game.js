@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { MdLoop } from "react-icons/md";
 import io from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
@@ -17,7 +18,28 @@ const HeaderBar = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    border-bottom: 2px solid #333;
+    border-bottom: 1.5px solid #333;
+`;
+
+const Button = styled.button`
+    height: 40px;
+    width: 100px;
+    padding: 0;
+    text-decoration: none;
+    border: 1.5px solid #333;
+    border-radius: 5px;
+    background-color: transparent;
+    outline: none;
+
+    transition-duration: 0.1s;
+    &:hover {
+        transform: translate(0, -1px);
+        box-shadow: 0 1px 2px #BBB;
+    }
+    &:active {
+        transform: translate(0, 1px);
+        box-shadow: 0 1px 2px 1px #999;
+    }
 `;
 
 const Game = () => {
@@ -26,7 +48,7 @@ const Game = () => {
     const [playerBoardState, setPlayerBoardState] = useState(generateGridOfObjects(10));
     const [playerType, setPlayerType] = useState();
     const [enemySunkShipCoords, setEnemySunkShipCoords] = useState({});
-    const [headerMessage, setHeaderMessage] = useState('Waiting for opponent...');
+    const [headerMessage, setHeaderMessage] = useState('Place your battleships!');
     const [isGameInProgress, setIsGameInProgress] = useState(false);
 
     const startGame = () => {
@@ -35,8 +57,8 @@ const Game = () => {
         });
     };
 
-    const handlePlayerShipCoordsChange = (newCoords) => {
-        setPlayerShipCoords({ ...newCoords });
+    const randomizeShipPos = () => {
+        setPlayerShipCoords(generateRandomShipPositions(10));
     };
 
     useEffect(() => {
@@ -79,6 +101,7 @@ const Game = () => {
 
         socket.on('playerType', (msg) => {
             setIsGameInProgress(true);
+            setHeaderMessage('Waiting for opponent...');
             setPlayerType(msg.player);
         });
 
@@ -109,16 +132,21 @@ const Game = () => {
             </HeaderBar>
             <div style={{ display: 'flex', flexDirection: 'row', marginTop: 25 }}>
                 <div style={{ display: 'flex', flex: 2, justifyContent: 'flex-end', padding: 25 }}>
-                    <Board
-                        areShipsMovable={!isGameInProgress}
-                        shipCoords={playerShipCoords}
-                        board={playerBoardState}
-                        handleShipCoordsChange={handlePlayerShipCoordsChange}
-                    />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <Board
+                            areShipsMovable={!isGameInProgress}
+                            shipCoords={playerShipCoords}
+                            board={playerBoardState}
+                            handleShipCoordsChange={setPlayerShipCoords}
+                        />
+                        <span onClick={() => randomizeShipPos()} style={{ display: 'flex', justifyContent: 'center' }}>
+                            <MdLoop style={{ fontSize: '1.5em' }} /> Randomize Ships
+                        </span>
+                    </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', padding: 25 }}>
+                <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'column', padding: 25 }}>
                     <span>{headerMessage}</span>
-                    <button style={{ height: 50, width: 100 }} onClick={startGame}> Start Game</button>
+                    {!isGameInProgress && <Button onClick={startGame}>Start Game</Button>}
                 </div>
                 <div style={{ flex: 2, padding: 25 }} >
                     <Board
