@@ -15,7 +15,6 @@ const Board = (props) => {
         const ship = Object.keys(shipCoords);
         // deep cloning the nested array
         const tempBoard = JSON.parse(JSON.stringify(board));
-        console.log(board, shipCoords);
         ship.forEach((shipName) => {
             const curShip = shipCoords[shipName];
             const shipCoord = [curShip[0][0], curShip[0][1]];

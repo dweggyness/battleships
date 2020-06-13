@@ -1,28 +1,41 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { MdLoop } from "react-icons/md";
+import React, { useState, useEffect } from 'react';
+import { MdLoop } from 'react-icons/md';
 import io from 'socket.io-client';
-import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import Board from '../components/Board';
-import Logo from '../assets/icon.png';
+import Header from '../components/Header';
 
 import { generateGridOfObjects } from '../utils';
 import generateRandomShipPositions from '../utils/generateRandomShipPositions';
 
-
 const socket = io('http://localhost:8080');
 
-const HeaderBar = styled.div`
-    width: 100%;
-    height: 100px;
+const FlexDiv = styled.div`
     display: flex;
-    flex-direction: row;
+`;
+
+const RandomizeShipButton = styled.button`
+    display: flex;
     align-items: center;
-    border-bottom: 1.5px solid #333;
+
+    text-decoration: none;
+    background-color: transparent;
+    outline: none;
+    border: none;
+
+    transition: ease-in 0.1s;
+    &:hover {
+        color: #6378ff;
+        transform: translate(0, -1px);
+    }
+
+    &:active {
+        transform: translate(0, 1px);
+    }
 `;
 
 const Button = styled.button`
-    height: 40px;
+    height: 35px;
     width: 100px;
     padding: 0;
     text-decoration: none;
@@ -31,7 +44,7 @@ const Button = styled.button`
     background-color: transparent;
     outline: none;
 
-    transition-duration: 0.1s;
+    transition: ease-in 0.1s;
     &:hover {
         transform: translate(0, -1px);
         box-shadow: 0 1px 2px #BBB;
@@ -50,11 +63,20 @@ const Game = () => {
     const [enemySunkShipCoords, setEnemySunkShipCoords] = useState({});
     const [headerMessage, setHeaderMessage] = useState('Place your battleships!');
     const [isGameInProgress, setIsGameInProgress] = useState(false);
+    const [hasGameEnded, setHasGameEnded] = useState(false);
 
     const startGame = () => {
         socket.emit('startGame', { gameID: 1,
             shipCoords: playerShipCoords,
         });
+    };
+
+    const resetGame = () => {
+        setEnemyBoardState(generateGridOfObjects(10));
+        setPlayerBoardState(generateGridOfObjects(10));
+        setEnemySunkShipCoords({});
+        setHasGameEnded(false);
+        setHeaderMessage('Place your ships!');
     };
 
     const randomizeShipPos = () => {
@@ -65,13 +87,16 @@ const Game = () => {
         socket.on('gameStream', (msg) => {
             const { player, nextPlayer, attackPos, result, winner } = msg;
 
-            console.log('msg', msg);
+            console.log(msg);
+
             if (player === playerType) {
                 setEnemyBoardState((prevBoardState) => {
                     const tempBoardState = [...prevBoardState];
                     const prevData = { ...tempBoardState[attackPos[1]][attackPos[0]] };
+
                     if (result.result === 'Hit') tempBoardState[attackPos[1]][attackPos[0]] = { ...prevData, hit: 'ship' };
                     else tempBoardState[attackPos[1]][attackPos[0]] = { ...prevData, hit: 'miss' };
+
                     if (result.ship) { // sunk ship
                         setEnemySunkShipCoords((prevCoords) => ({ ...prevCoords, [result.ship]: result.shipCoords }));
                     }
@@ -81,20 +106,26 @@ const Game = () => {
                 setPlayerBoardState((prevBoardState) => {
                     const tempBoardState = [...prevBoardState];
                     const prevData = { ...tempBoardState[attackPos[1]][attackPos[0]] };
+
                     if (result.result === 'Hit') tempBoardState[attackPos[1]][attackPos[0]] = { ...prevData, hit: 'ship' };
                     else tempBoardState[attackPos[1]][attackPos[0]] = { ...prevData, hit: 'miss' };
+
                     return tempBoardState;
                 });
             }
 
-            if (winner === playerType) {
-                setIsGameInProgress(false);
+            if (winner) {
+                setHasGameEnded(true);
                 console.log('Winner get!');
+                if (winner === playerType) setHeaderMessage('Victory!');
+                else setHeaderMessage('You lost!');
             }
 
             if (nextPlayer === playerType) {
-                setHeaderMessage('Your turn!');
+                console.log('wat', nextPlayer, playerType);
+                setHeaderMessage('Your turn');
             } else {
+                console.log('wat', nextPlayer, playerType);
                 setHeaderMessage('Opponent turn');
             }
         });
@@ -117,6 +148,7 @@ const Game = () => {
     }, [playerShipCoords, playerType]);
 
     const onCellAttack = (x, y) => {
+        if (!isGameInProgress) return false;
         socket.emit('attackPos', { attackPos: [x, y] });
     };
 
@@ -124,39 +156,38 @@ const Game = () => {
 
     return (
         <>
-            <HeaderBar>
-                <Link style={{ margin: 10, height: '100%', textDecoration: 'none', alignItems: 'center', display: 'flex', flexDirection: 'row' }} to="/">
-                    <img style={{ margin: '10%', height: '90%' }} src={Logo} alt='battleship logo' />
-                    Waterbound Fighting Vessels
-                </Link>
-            </HeaderBar>
-            <div style={{ display: 'flex', flexDirection: 'row', marginTop: 25 }}>
-                <div style={{ display: 'flex', flex: 2, justifyContent: 'flex-end', padding: 25 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <Header />
+            <FlexDiv style={{ flexDirection: 'row', marginTop: 25 }}>
+                <FlexDiv style={{ flex: 2, justifyContent: 'flex-end', padding: 25 }}>
+                    <FlexDiv style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                         <Board
                             areShipsMovable={!isGameInProgress}
                             shipCoords={playerShipCoords}
                             board={playerBoardState}
                             handleShipCoordsChange={setPlayerShipCoords}
                         />
-                        <span onClick={() => randomizeShipPos()} style={{ display: 'flex', justifyContent: 'center' }}>
-                            <MdLoop style={{ fontSize: '1.5em' }} /> Randomize Ships
-                        </span>
-                    </div>
-                </div>
-                <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'column', padding: 25 }}>
+                        {!isGameInProgress
+                        && <RandomizeShipButton style={{ marginTop: 15 }} onClick={() => randomizeShipPos()}>
+                            <MdLoop style={{ fontSize: '1.5em' }} />
+                            Randomize Ships
+                        </RandomizeShipButton> }
+                    </FlexDiv>
+                </FlexDiv>
+                <FlexDiv style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'column', padding: 25 }}>
                     <span>{headerMessage}</span>
-                    {!isGameInProgress && <Button onClick={startGame}>Start Game</Button>}
-                </div>
-                <div style={{ flex: 2, padding: 25 }} >
+                    { hasGameEnded
+                        ? <Button onClick={resetGame}> Play Again?</Button>
+                        : <Button disabled={isGameInProgress} onClick={startGame}>Start Game</Button> }
+                </FlexDiv>
+                <FlexDiv style={{ flex: 2, padding: 25 }} >
                     <Board
                         areShipsMovable={false}
                         shipCoords={enemySunkShipCoords}
                         onCellAttack={onCellAttack}
                         board={enemyBoardState}
                     />
-                </div>
-            </div>
+                </FlexDiv>
+            </FlexDiv>
         </>
     );
 };
