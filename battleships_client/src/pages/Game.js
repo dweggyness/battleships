@@ -24,7 +24,7 @@ const RandomizeShipButton = styled.button`
     border: none;
 
     transition: ease-in 0.1s;
-    &:hover {
+    &:hover:enabled {
         color: #6378ff;
         transform: translate(0, -1px);
     }
@@ -45,7 +45,7 @@ const Button = styled.button`
     outline: none;
 
     transition: ease-in 0.1s;
-    &:hover {
+    &:hover:enabled {
         transform: translate(0, -1px);
         box-shadow: 0 1px 2px #BBB;
     }
@@ -131,6 +131,7 @@ const Game = () => {
         });
 
         socket.on('playerType', (msg) => {
+            console.log(msg);
             setIsGameInProgress(true);
             setHeaderMessage('Waiting for opponent...');
             setPlayerType(msg.player);
@@ -166,11 +167,10 @@ const Game = () => {
                             board={playerBoardState}
                             handleShipCoordsChange={setPlayerShipCoords}
                         />
-                        {!isGameInProgress
-                        && <RandomizeShipButton style={{ marginTop: 15 }} onClick={() => randomizeShipPos()}>
+                        <RandomizeShipButton disabled={isGameInProgress} style={{ marginTop: 15 }} onClick={() => randomizeShipPos()}>
                             <MdLoop style={{ fontSize: '1.5em' }} />
                             Randomize Ships
-                        </RandomizeShipButton> }
+                        </RandomizeShipButton>
                     </FlexDiv>
                 </FlexDiv>
                 <FlexDiv style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'column', padding: 25 }}>

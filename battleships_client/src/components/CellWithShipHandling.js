@@ -4,7 +4,6 @@ import isShipPositionValid from '../utils/isShipPositionValid';
 import buildShipCoords from '../utils/buildShipCoords';
 import Battleship from './Battleship';
 import Cell from './Cell';
-import './Cell.css';
 
 const CellWithShipHandling = (props) => {
     const { areShipsMovable = false, handleShipCoordsChange = () => {}, point, sunk, shipInCell, shipCoords } = props;

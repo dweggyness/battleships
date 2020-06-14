@@ -1,18 +1,25 @@
 import React from 'react';
+import styled from '@emotion/styled';
 import XCross from './XCross';
-import './Cell.css';
+
+const StyledCell = styled.td`
+    border: 1px solid #7e7e7e;
+    background-color: transparent;
+    width: 2em;
+    height: 2em;
+    padding: 0;
+`;
 
 const Cell = React.forwardRef((props, ref) => {
     const { onClick, hitState } = props;
-    return <td
-        className={'cell'}
+    return <StyledCell
         ref={ref}
         onClick={onClick}
     >
         {hitState === 'ship' && <XCross color={'rgb(255, 55, 55)'} />}
         {hitState === 'miss' && <XCross color={'rgb(150, 150, 150)'} />}
         {props.children}
-    </td>;
+    </StyledCell>;
 });
 
 Cell.displayName = 'Cell';

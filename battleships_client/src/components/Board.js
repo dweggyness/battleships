@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import styled from '@emotion/styled';
 import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import CellWithShipHandling from './CellWithShipHandling';
 import isShipSunk from '../utils/isShipSunk';
-import './Board.css';
+
+const Table = styled.table`
+    border: 1px solid black;
+    border-collapse: collapse;
+`;
+
+const BoardRow = styled.tr`
+    display: flex;
+    flex-direction: row;
+    font-size: 16px;
+    -webkit-touch-callout: none;
+    -webkit-user-select:none;
+`;
 
 const Board = (props) => {
     const { areShipsMovable, handleShipCoordsChange, shipCoords, onCellAttack = () => {}, board } = props;
@@ -29,8 +42,8 @@ const Board = (props) => {
 
     return (
         <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
-            <table className={'grid'}><tbody>
-                {_board.map((row) => (<tr className={'board'} key={row[0].x + row[0].y * 1000}>
+            <Table className={'grid'}><tbody>
+                {_board.map((row) => (<BoardRow key={row[0].x + row[0].y * 1000}>
                     {row.map((cell) => (
                         <CellWithShipHandling
                             key={cell.x + cell.y * 10}
@@ -45,9 +58,9 @@ const Board = (props) => {
                             shipCoords={shipCoords}
                         />
                     ))}
-                </tr>
+                </BoardRow>
                 ))}
-            </tbody></table>
+            </tbody></Table>
         </DndProvider>
     );
 };

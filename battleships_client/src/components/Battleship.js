@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import './Cell.css';
 
 const Battleship = (props) => {
     const { areShipsMovable = false, sunk, hovering, handleShipRotate = () => {}, ship } = props;
