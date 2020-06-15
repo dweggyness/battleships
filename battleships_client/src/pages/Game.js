@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import { MdLoop } from 'react-icons/md';
+import { FaRegCopy } from 'react-icons/fa';
 import io from 'socket.io-client';
 import styled from '@emotion/styled';
 import Board from '../components/Board';
@@ -34,6 +36,51 @@ const RandomizeShipButton = styled.button`
     }
 `;
 
+const URLBoxContainer = styled.div`
+    position: absolute;
+    padding: 15;
+    border-radius: 5px;
+    backgroundColor: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+`;
+
+const URLBox = styled.div`
+    display: flex;
+    align-items: center;
+    background-color: white;
+    width: 250px;
+    height: 30px;
+    padding: 0px 5px;
+    border: 1.5px solid black;
+    border-radius: 5px 0 0 5px;
+`;
+
+const ClipBoardBox = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1.5px solid black;
+    background-color: #FAFAFA;
+    border-left: none;
+    border-radius: 0 5px 5px 0;
+
+    &:hover {
+        * {
+            transform: translate(0, -1px);
+        }
+    }
+
+    &:active {
+        * {
+            transform: translate(0, 1px);
+        }
+    }
+`;
+
 const Button = styled.button`
     height: 35px;
     width: 100px;
@@ -61,13 +108,18 @@ const Game = () => {
     const [enemyBoardState, setEnemyBoardState] = useState(generateGridOfObjects(10));
     const [playerBoardState, setPlayerBoardState] = useState(generateGridOfObjects(10));
     const [playerType, setPlayerType] = useState();
+    const [currentPlayerTurn, setCurrentPlayerTurn] = useState();
     const [enemySunkShipCoords, setEnemySunkShipCoords] = useState({});
     const [headerMessage, setHeaderMessage] = useState('Place your battleships!');
     const [isGameInProgress, setIsGameInProgress] = useState(false);
     const [hasGameEnded, setHasGameEnded] = useState(false);
 
+    const { id } = useParams();
+    let gameURL = useLocation();
+    gameURL = `localhost:3000${gameURL.pathname}`;
+
     const startGame = () => {
-        socket.emit('startGame', { gameID: 1,
+        socket.emit('startGame', { gameID: id,
             shipCoords: playerShipCoords,
         });
     };
@@ -125,9 +177,11 @@ const Game = () => {
             if (nextPlayer === playerType) {
                 console.log('wat', nextPlayer, playerType);
                 setHeaderMessage('Your turn');
+                setCurrentPlayerTurn('Player');
             } else {
                 console.log('wat', nextPlayer, playerType);
                 setHeaderMessage('Opponent turn');
+                setCurrentPlayerTurn('Opponent');
             }
         });
 
@@ -150,6 +204,7 @@ const Game = () => {
     }, [playerShipCoords, playerType]);
 
     const onCellAttack = (x, y) => {
+        console.log('uwu');
         if (!isGameInProgress) return false;
         socket.emit('attackPos', { attackPos: [x, y] });
     };
@@ -181,12 +236,27 @@ const Game = () => {
                         : <Button disabled={isGameInProgress} onClick={startGame}>Start Game</Button> }
                 </FlexDiv>
                 <FlexDiv style={{ flex: 2, padding: 25 }} >
-                    <Board
-                        areShipsMovable={false}
-                        shipCoords={enemySunkShipCoords}
-                        onCellAttack={onCellAttack}
-                        board={enemyBoardState}
-                    />
+                    <div style={{ position: 'absolute' }}>
+                        <div style={{ opacity: currentPlayerTurn === 'Player' ? 1.0 : 0.5 }}>
+                            <Board
+                                areShipsMovable={false}
+                                shipCoords={enemySunkShipCoords}
+                                onCellAttack={onCellAttack}
+                                board={enemyBoardState}
+                            />
+                        </div>
+                        { !isGameInProgress && <URLBoxContainer style={{ position: 'absolute', padding: 15, borderRadius: 5, backgroundColor: 'white', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                            <span>Copy and send this URL to your friend!</span>
+                            <FlexDiv style={{ marginTop: 15 }}>
+                                <URLBox>
+                                    {gameURL}
+                                </URLBox>
+                                <ClipBoardBox onClick={() => navigator.clipboard.writeText(gameURL) }>
+                                    <FaRegCopy />
+                                </ClipBoardBox>
+                            </FlexDiv>
+                        </URLBoxContainer> }
+                    </div>
                 </FlexDiv>
             </FlexDiv>
         </>

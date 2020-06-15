@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { GiBroadsword } from 'react-icons/gi';
 import { RiRobotLine } from 'react-icons/ri';
+import generateRandomNumber from '../utils/generateRandomNumber';
 import styled from '@emotion/styled';
 import Header from '../components/Header';
 import Card from '../components/Card';
@@ -34,8 +35,13 @@ const Home = () => {
     const [clickedPlayBot, setClickedPlayBot] = useState(false);
     const [clickedPlayFriend, setClickedPlayFriend] = useState(false);
 
+    if (clickedPlayBot) {
+        return <Redirect to={'/game/bot'} />;
+    }
+
     if (clickedPlayFriend) {
-        return <Redirect to={'/game'} />;
+        const randomGameID = generateRandomNumber();
+        return <Redirect to={`/game/${randomGameID}`} />;
     }
 
     return (

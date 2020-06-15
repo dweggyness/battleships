@@ -13,7 +13,7 @@ function App() {
         <Router>
             <Switch>
                 <Route exact path='/' component={Home} />
-                <Route path='/game' component={Game} />
+                <Route path='/game/:id' component={Game} />
                 <Route render={() => <h1>404 You are not supposed to see this! 404</h1>} />
             </Switch>
         </Router>
