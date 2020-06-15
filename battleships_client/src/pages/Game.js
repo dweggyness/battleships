@@ -29,7 +29,7 @@ const RandomizeShipButton = styled.button`
         transform: translate(0, -1px);
     }
 
-    &:active {
+    &:active:enabled {
         transform: translate(0, 1px);
     }
 `;
@@ -49,7 +49,8 @@ const Button = styled.button`
         transform: translate(0, -1px);
         box-shadow: 0 1px 2px #BBB;
     }
-    &:active {
+
+    &:active:enabled {
         transform: translate(0, 1px);
         box-shadow: 0 1px 2px 1px #999;
     }
