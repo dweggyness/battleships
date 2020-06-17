@@ -19,6 +19,11 @@ module.exports.Game = class Game {
         return playerType;
     }
 
+    getNextPlayerTurn() {
+        if (this.currentTurn === 'player1') return 'player2';
+        if (this.currentTurn === 'player2') return 'player1';
+    }
+
     player1AttackPos(point) { // point : [x,y]
         if (Game.pointExistsInArray(point, this.player1AttackCoordinates)) throw (new Error('Coordinate attacked before!'));
         const enemyShipCoords = this.player2ShipCoordinates;
@@ -45,6 +50,7 @@ module.exports.Game = class Game {
         });
 
         this.player1AttackCoordinates.push(point);
+        this.currentTurn = this.getNextPlayerTurn();
         if (result) return result;
         return { result: 'Miss' };
     }
@@ -75,6 +81,7 @@ module.exports.Game = class Game {
         });
 
         this.player2AttackCoordinates.push(point);
+        this.currentTurn = this.getNextPlayerTurn();
         if (result) return result;
         return { result: 'Miss' };
     }

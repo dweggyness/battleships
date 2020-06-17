@@ -1,5 +1,5 @@
 
-const { Game } = require('./Game');
+const { GameRapidFire: Game } = require('./GameRapidFire');
 const { ongoingGamesCache } = require('../cache/cache');
 const { io } = require('../app');
 
@@ -27,44 +27,36 @@ module.exports.UserGameService = class UserGameService {
         let result = '';
         if (playerType === 'player1') {
             result = game.player1AttackPos(attackPos);
-            game.currentTurn = 'player2';
         } else if (playerType === 'player2') {
             result = game.player2AttackPos(attackPos);
-            game.currentTurn = 'player1';
         }
 
         io.in(this.gameID).emit('gameStream', { player: playerType, attackPos, result, nextPlayer: game.currentTurn });
     }
 
-    setupGame(gameID, shipCoords) {
+    setupGameInstance(gameID, shipCoords) {
         if (this.gameID && ongoingGamesCache.get(this.gameID)) throw new Error('You are already in a game!');
         this.gameID = gameID;
         this.socket.join(gameID);
 
-        const gameInstance = this.setupShipsInGameInstance(shipCoords);
-
-        ongoingGamesCache.update(gameID, { game: gameInstance });
-        this.socket.emit('playerType', { player: gameInstance.getPlayerType(this.clientID) });
-    }
-
-    setupShipsInGameInstance(setupShipCoords) {
         const existingGameInstance = ongoingGamesCache.get(this.gameID);
         let gameInstance = {};
         if (existingGameInstance) {
             const { game } = existingGameInstance;
 
-            game.player2SetupShips(setupShipCoords);
+            game.player2SetupShips(shipCoords);
             game.player2 = this.clientID;
             gameInstance = game;
         } else {
             const game = new Game(this.gameID);
 
             game.player1 = this.clientID;
-            game.player1SetupShips(setupShipCoords);
+            game.player1SetupShips(shipCoords);
             gameInstance = game;
         }
 
-        return gameInstance;
+        ongoingGamesCache.update(gameID, { game: gameInstance });
+        this.socket.emit('playerType', { player: gameInstance.getPlayerType(this.clientID) });
     }
 
     startGame() {
@@ -73,7 +65,7 @@ module.exports.UserGameService = class UserGameService {
         const arr = ['player1', 'player2'];
         const startingPlayer = arr[Math.floor(Math.random() * 2)];
         game.currentTurn = startingPlayer;
-        io.in(this.gameID).emit('gameStream', { nextPlayer: startingPlayer });
+        io.in(this.gameID).emit('gameStream', { nextPlayer: game.currentTurn });
     }
 
     checkForPlayerVictory() {

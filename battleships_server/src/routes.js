@@ -24,7 +24,7 @@ exports.setRoutes = async (app) => {
 
         socket.on('startGame', ({ gameID, shipCoords }) => {
             try {
-                GameHandler.setupGame(gameID, shipCoords);
+                GameHandler.setupGameInstance(gameID, shipCoords);
                 if (GameHandler.isGameInstanceReady()) {
                     GameHandler.startGame();
                 }
