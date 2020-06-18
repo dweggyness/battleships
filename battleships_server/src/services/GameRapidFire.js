@@ -8,7 +8,6 @@ module.exports.GameRapidFire = class GameRapidFire extends Game {
     }
 
     getNextPlayerTurn() {
-        console.log(this.currentPlayerTurnsLeft, this.currentTurn);
         if (this.currentPlayerTurnsLeft > 1) {
             this.currentPlayerTurnsLeft -= 1;
             return this.currentTurn;

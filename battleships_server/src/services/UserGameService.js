@@ -31,7 +31,8 @@ module.exports.UserGameService = class UserGameService {
             result = game.player2AttackPos(attackPos);
         }
 
-        io.in(this.gameID).emit('gameStream', { player: playerType, attackPos, result, nextPlayer: game.currentTurn });
+        io.in(this.gameID).emit('gameStream', { player: playerType, attackPos, result });
+        io.in(this.gameID).emit('nextPlayer', { nextPlayer: game.currentTurn });
     }
 
     setupGameInstance(gameID, shipCoords) {
@@ -65,7 +66,7 @@ module.exports.UserGameService = class UserGameService {
         const arr = ['player1', 'player2'];
         const startingPlayer = arr[Math.floor(Math.random() * 2)];
         game.currentTurn = startingPlayer;
-        io.in(this.gameID).emit('gameStream', { nextPlayer: game.currentTurn });
+        io.in(this.gameID).emit('nextPlayer', { nextPlayer: game.currentTurn });
     }
 
     checkForPlayerVictory() {
