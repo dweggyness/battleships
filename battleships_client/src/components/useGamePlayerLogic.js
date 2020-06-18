@@ -3,6 +3,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 
 import { generateGridOfObjects } from '../utils';
+import countRemainingShips from '../utils/countRemainingShips';
 import generateRandomShipPositions from '../utils/generateRandomShipPositions';
 
 const socket = io('http://localhost:8080');
@@ -12,12 +13,15 @@ const useGamePlayerLogic = () => {
     const [enemyBoardState, setEnemyBoardState] = useState(generateGridOfObjects(10));
     const [playerBoardState, setPlayerBoardState] = useState(generateGridOfObjects(10));
     const [playerType, setPlayerType] = useState();
+    const [lastPlayer, setLastPlayer] = useState();
     const [currentPlayerTurn, setCurrentPlayerTurn] = useState();
+    const [shotsLeft, setShotsLeft] = useState(5);
     const [enemySunkShipCoords, setEnemySunkShipCoords] = useState({});
-    const [headerMessage, setHeaderMessage] = useState('Place your battleships!');
+    const [headerMessage, setHeaderMessage] = useState('Place your battleships! \n\nDrag to move your ships, and tap on them to rotate the ship!');
     const [isPlayerReady, setIsPlayerReady] = useState(false);
     const [isGameInProgress, setIsGameInProgress] = useState(false);
     const [hasGameEnded, setHasGameEnded] = useState(false);
+
 
     const { id } = useParams();
     let gameURL = useLocation();
@@ -38,7 +42,7 @@ const useGamePlayerLogic = () => {
         setHasGameEnded(false);
         setIsGameInProgress(false);
         setIsPlayerReady(false);
-        setHeaderMessage('Place your ships!');
+        setHeaderMessage('Place your battleships! \n\nDrag to move your ships, and tap on them to rotate the ship!');
     };
 
     const randomizeShipPos = () => {
@@ -48,8 +52,6 @@ const useGamePlayerLogic = () => {
     useEffect(() => {
         socket.on('gameStream', (msg) => {
             const { player, nextPlayer, attackPos, result, winner } = msg;
-
-            console.log(msg);
 
             if (player === playerType) {
                 setEnemyBoardState((prevBoardState) => {
@@ -78,42 +80,56 @@ const useGamePlayerLogic = () => {
 
             if (winner) {
                 setHasGameEnded(true);
-                console.log('Winner get!');
-                if (winner === playerType) setHeaderMessage('Victory!');
-                else setHeaderMessage('You lost!');
-            }
-
-            if (nextPlayer) {
-                if (nextPlayer === playerType) {
-                    setIsGameInProgress(true);
-                    setHeaderMessage('Your turn');
-                    setCurrentPlayerTurn('Player');
-                } else {
-                    setIsGameInProgress(true);
-                    setHeaderMessage('Opponent turn');
-                    setCurrentPlayerTurn('Opponent');
-                }
+                if (winner === playerType) setHeaderMessage('Victory! \n\n(☞ﾟヮﾟ)☞');
+                else setHeaderMessage('You lost! \n\n(╯°□°）╯︵ ┻━┻');
             }
         });
 
+        socket.on('nextPlayer', (msg) => {
+            const { nextPlayer } = msg;
+
+            let shots = shotsLeft;
+            if (nextPlayer === playerType) {
+                if (nextPlayer !== lastPlayer) shots = countRemainingShips(playerShipCoords, playerBoardState);
+
+                setIsGameInProgress(true);
+                setHeaderMessage(`Your turn. \n\n${shots} shots left`);
+                setCurrentPlayerTurn('Player');
+
+                shots -= 1;
+                setShotsLeft(shots);
+            } else {
+                if (nextPlayer !== lastPlayer) shots = 5 - Object.keys(enemySunkShipCoords).length;
+
+                setIsGameInProgress(true);
+                setHeaderMessage(`Opponent turn. \n\n${shots} shots left`);
+                setCurrentPlayerTurn('Opponent');
+
+                shots -= 1;
+                setShotsLeft(shots);
+            }
+
+            setLastPlayer(nextPlayer);
+        })
+
         socket.on('playerType', (msg) => {
-            console.log(msg);
             setPlayerType(msg.player);
         });
 
         socket.on('errorMessage', (msg) => {
-            console.log(msg);
+            // what am i supposed to do here lmao
+            // if an error occurs that means my server is shit :(
         });
 
         return () => {
             socket.off('gameStream');
+            socket.off('nextPlayer');
             socket.off('playerType');
             socket.off('errorMessage');
         };
-    }, [playerShipCoords, playerType]);
+    }, [shotsLeft, playerBoardState, lastPlayer, playerShipCoords, enemySunkShipCoords, playerType]);
 
     const onCellAttack = (x, y) => {
-        console.log('uwu');
         if (!isGameInProgress) return false;
         socket.emit('attackPos', { attackPos: [x, y] });
     };

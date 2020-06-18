@@ -1,8 +1,8 @@
 import React from 'react';
 import { MdLoop } from 'react-icons/md';
-import { FaRegCopy } from 'react-icons/fa';
 import styled from '@emotion/styled';
 import useGamePlayerLogic from '../components/useGamePlayerLogic';
+import URLBox from '../components/URLBox';
 import Board from '../components/Board';
 import Header from '../components/Header';
 
@@ -40,40 +40,6 @@ const URLBoxContainer = styled.div`
     transform: translate(-50%, -50%);
 `;
 
-const URLBox = styled.div`
-    display: flex;
-    align-items: center;
-    background-color: white;
-    width: 250px;
-    height: 30px;
-    padding: 0px 5px;
-    border: 1.5px solid black;
-    border-radius: 5px 0 0 5px;
-`;
-
-const ClipBoardBox = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    border: 1.5px solid black;
-    background-color: #FAFAFA;
-    border-left: none;
-    border-radius: 0 5px 5px 0;
-
-    &:hover {
-        * {
-            transform: translate(0, -1px);
-        }
-    }
-
-    &:active {
-        * {
-            transform: translate(0, 1px);
-        }
-    }
-`;
 
 const Button = styled.button`
     height: 35px;
@@ -135,7 +101,7 @@ const Game = (props) => {
                     </FlexDiv>
                 </FlexDiv>
                 <FlexDiv style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'column', padding: 25 }}>
-                    <span>{headerMessage}</span>
+                    <p style={{ textAlign: 'center', whiteSpace: 'pre-wrap' }}>{headerMessage}</p>
                     { hasGameEnded
                         ? <Button onClick={resetGame}> Play Again?</Button>
                         : <Button disabled={isPlayerReady} onClick={startGame}>Start Game</Button> }
@@ -153,12 +119,7 @@ const Game = (props) => {
                         { !isGameInProgress && <URLBoxContainer style={{ position: 'absolute', padding: 15, borderRadius: 5, backgroundColor: 'white', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
                             <span>Copy and send this URL to your friend!</span>
                             <FlexDiv style={{ marginTop: 15 }}>
-                                <URLBox>
-                                    {gameURL}
-                                </URLBox>
-                                <ClipBoardBox onClick={() => navigator.clipboard.writeText(gameURL) }>
-                                    <FaRegCopy />
-                                </ClipBoardBox>
+                                <URLBox gameURL={gameURL} />
                             </FlexDiv>
                         </URLBoxContainer> }
                     </div>
