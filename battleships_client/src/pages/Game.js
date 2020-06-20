@@ -13,6 +13,7 @@ const FlexDiv = styled.div`
 const RandomizeShipButton = styled.button`
     display: flex;
     align-items: center;
+    margin-top: 25px;
 
     text-decoration: none;
     background-color: transparent;
@@ -27,6 +28,57 @@ const RandomizeShipButton = styled.button`
 
     &:active:enabled {
         transform: translate(0, 1px);
+    }
+
+    @media (max-width: 768px) {
+        margin-top: 0px;
+        margin-bottom: 10px;
+    }
+`;
+
+const Layout = styled.div`
+    display: flex;
+    flex-direction: row;
+    margin-top: 25px;
+    align-items: center;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+`;
+
+const PlayerBoardContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    @media (max-width: 768px) {
+        flex-direction: column-reverse;
+    }
+`;
+
+const GameInfoContainer = styled.div`
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    align-self: stretch;
+    padding: 25px;
+
+    @media (max-width: 768px) {
+        padding: 0px 25px;
+    }
+`;
+
+const EnemyBoardContainer = styled.div`
+    display: flex;
+    align-self: flex-start;
+    flex: 2;
+    padding: 15px;
+
+    @media (max-width: 768px) {
+        align-self: center;
     }
 `;
 
@@ -61,6 +113,10 @@ const Button = styled.button`
         transform: translate(0, 1px);
         box-shadow: 0 1px 2px 1px #999;
     }
+
+    &:disabled {
+        border-color: #bbbbbb;
+    }
 `;
 
 const Game = (props) => {
@@ -85,29 +141,29 @@ const Game = (props) => {
     return (
         <>
             <Header />
-            <FlexDiv style={{ flexDirection: 'row', marginTop: 25 }}>
-                <FlexDiv style={{ flex: 2, justifyContent: 'flex-end', padding: 25 }}>
-                    <FlexDiv style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+            <Layout>
+                <FlexDiv style={{ flex: 2, justifyContent: 'flex-end', padding: 15 }}>
+                    <PlayerBoardContainer>
                         <Board
                             areShipsMovable={!isGameInProgress}
                             shipCoords={playerShipCoords}
                             board={playerBoardState}
                             handleShipCoordsChange={setPlayerShipCoords}
                         />
-                        <RandomizeShipButton disabled={isPlayerReady} style={{ marginTop: 15 }} onClick={() => randomizeShipPos()}>
+                        <RandomizeShipButton disabled={isPlayerReady} onClick={() => randomizeShipPos()}>
                             <MdLoop style={{ fontSize: '1.5em' }} />
                             Randomize Ships
                         </RandomizeShipButton>
-                    </FlexDiv>
+                    </PlayerBoardContainer>
                 </FlexDiv>
-                <FlexDiv style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'column', padding: 25 }}>
-                    <p style={{ textAlign: 'center', whiteSpace: 'pre-wrap' }}>{headerMessage}</p>
+                <GameInfoContainer>
+                    <p style={{ margin: '0 0 10px 0', textAlign: 'center', whiteSpace: 'pre-wrap' }}>{headerMessage}</p>
                     { hasGameEnded
                         ? <Button onClick={resetGame}> Play Again?</Button>
                         : <Button disabled={isPlayerReady} onClick={startGame}>Start Game</Button> }
-                </FlexDiv>
-                <FlexDiv style={{ flex: 2, padding: 25 }} >
-                    <div style={{ position: 'absolute' }}>
+                </GameInfoContainer>
+                <EnemyBoardContainer>
+                    <div style={{ position: 'relative' }}>
                         <div style={{ opacity: currentPlayerTurn === 'Player' ? 1.0 : 0.5 }}>
                             <Board
                                 areShipsMovable={false}
@@ -123,8 +179,8 @@ const Game = (props) => {
                             </FlexDiv>
                         </URLBoxContainer> }
                     </div>
-                </FlexDiv>
-            </FlexDiv>
+                </EnemyBoardContainer>
+            </Layout>
         </>
     );
 };

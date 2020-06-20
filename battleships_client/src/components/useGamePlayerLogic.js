@@ -22,10 +22,9 @@ const useGamePlayerLogic = () => {
     const [isGameInProgress, setIsGameInProgress] = useState(false);
     const [hasGameEnded, setHasGameEnded] = useState(false);
 
-
     const { id } = useParams();
     let gameURL = useLocation();
-    gameURL = `localhost:3000${gameURL.pathname}`;
+    gameURL = `${window.location.host}${gameURL.pathname}`;
 
     const startGame = () => {
         setIsPlayerReady(true);
@@ -51,7 +50,7 @@ const useGamePlayerLogic = () => {
 
     useEffect(() => {
         socket.on('gameStream', (msg) => {
-            const { player, nextPlayer, attackPos, result, winner } = msg;
+            const { player, attackPos, result, winner } = msg;
 
             if (player === playerType) {
                 setEnemyBoardState((prevBoardState) => {
@@ -93,7 +92,7 @@ const useGamePlayerLogic = () => {
                 if (nextPlayer !== lastPlayer) shots = countRemainingShips(playerShipCoords, playerBoardState);
 
                 setIsGameInProgress(true);
-                setHeaderMessage(`Your turn. \n\n${shots} shots left`);
+                setHeaderMessage(`Your turn. \n\n${shots} 💣 shots left`);
                 setCurrentPlayerTurn('Player');
 
                 shots -= 1;
@@ -102,7 +101,7 @@ const useGamePlayerLogic = () => {
                 if (nextPlayer !== lastPlayer) shots = 5 - Object.keys(enemySunkShipCoords).length;
 
                 setIsGameInProgress(true);
-                setHeaderMessage(`Opponent turn. \n\n${shots} shots left`);
+                setHeaderMessage(`Opponent turn. \n\n${shots} 💣 shots left`);
                 setCurrentPlayerTurn('Opponent');
 
                 shots -= 1;
@@ -117,6 +116,7 @@ const useGamePlayerLogic = () => {
         });
 
         socket.on('errorMessage', (msg) => {
+            console.log('err', msg);
             // what am i supposed to do here lmao
             // if an error occurs that means my server is shit :(
         });
