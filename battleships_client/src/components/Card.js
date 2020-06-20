@@ -47,14 +47,14 @@ const Button = styled.button`
 `;
 
 const CardComponent = (props) => {
-    const { Icon, title, onButtonClick, children } = props;
+    const { Icon, title, onButtonClick, text } = props;
 
     return (
         <Card>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 15 }}>
                 <Icon style={{ fontSize: '3em' }}/>
                 <Title style={{ marginTop: 15 }}>{title}</Title>
-                {children}
+                <p style={{ padding: '0 25px', textAlign: 'center' }}>{text}</p>
             </div>
             <Button onClick={onButtonClick} style={{ marginBottom: 15 }}>Play</Button>
         </Card>

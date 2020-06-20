@@ -53,13 +53,16 @@ const Home = () => {
                         onButtonClick={() => setClickedPlayBot(true)}
                         Icon={RiRobotLine}
                         title={'Play against BOT'}
+                        text={'Practice your skills against an AI opponent!'}
                     />
                 </CardContainer>
                 <CardContainer>
                     <Card
                         onButtonClick={() => setClickedPlayFriend(true)}
                         Icon={GiBroadsword}
-                        title={'Play against friend'}/>
+                        title={'Play against friend'}
+                        text={'Classic Battleships against a friend, with a rapid-fire twist! Fire as many times as the number of ships you have still floating.'}
+                    />
                 </CardContainer>
             </CardLayout>
         </>
