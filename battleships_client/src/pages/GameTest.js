@@ -1,7 +1,7 @@
 import React from 'react';
 import { MdLoop } from 'react-icons/md';
 import styled from '@emotion/styled';
-import useGamePlayerLogic from '../components/useGamePlayerLogic';
+import useGameBotLogic from '../components/useGameBotLogic';
 import URLBox from '../components/URLBox';
 import Board from '../components/Board';
 import Header from '../components/Header';
@@ -136,7 +136,7 @@ const Game = (props) => {
         enemyBoardState,
         gameURL,
         randomizeShipPos,
-    } = useGamePlayerLogic();
+    } = useGameBotLogic();
 
     return (
         <>

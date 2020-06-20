@@ -40,7 +40,7 @@ const Home = () => {
     }
 
     if (clickedPlayFriend) {
-        const randomGameID = generateRandomNumber();
+        const randomGameID = generateRandomNumber(10000000);
         return <Redirect to={`/game/${randomGameID}`} />;
     }
 

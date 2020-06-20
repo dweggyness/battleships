@@ -5,7 +5,7 @@ import {
     Switch,
     Route,
 } from 'react-router-dom';
-import { Game, Home } from './pages';
+import { Game, Home, GameTest } from './pages';
 import './index.css';
 
 function App() {
@@ -13,6 +13,7 @@ function App() {
         <Router>
             <Switch>
                 <Route exact path='/' component={Home} />
+                <Route exact path='/game/bot' component={GameTest} />
                 <Route path='/game/:id' component={Game} />
                 <Route render={() => <h1>404 You are not supposed to see this! 404</h1>} />
             </Switch>
