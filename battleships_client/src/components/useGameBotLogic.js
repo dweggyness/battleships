@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 
+import useBotMakeMove from './useBotMakeMove';
 import { generateGridOfObjects } from '../utils';
-import getNextBotMove from '../utils/getNextBotMove';
 import pointExistsInArray from '../utils/pointExistsInArray';
 import countRemainingShips from '../utils/countRemainingShips';
+import generateRandomNumber from '../utils/generateRandomNumber';
 import generateRandomShipPositions from '../utils/generateRandomShipPositions';
 import isShipSunk from '../utils/isShipSunk';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const useGamePlayerLogic = () => {
+    const { makeBotNextMove, updateBotAIHitShip, updateBotAIDestroyShip } = useBotMakeMove();
+
     const [playerShipCoords, setPlayerShipCoords] = useState(generateRandomShipPositions(10));
     const [enemyShipCoords, setEnemyShipCoords] = useState(generateRandomShipPositions(10));
     const [enemyBoardState, setEnemyBoardState] = useState(generateGridOfObjects(10));
@@ -21,14 +24,14 @@ const useGamePlayerLogic = () => {
     const [isGameInProgress, setIsGameInProgress] = useState(false);
     const [hasGameEnded, setHasGameEnded] = useState(false);
 
+    const performNextBotMove = async () => {
+        const nextMove = makeBotNextMove(playerBoardState);
+        await sleep(generateRandomNumber(150) + 250);
+        botAttackPos(nextMove[0], nextMove[1]);
+    };
+
     useEffect(() => {
         if (isGameInProgress && currentPlayerTurn === 'bot' && shotsLeft >= 1) {
-            const performNextBotMove = async () => {
-                const nextMove = getNextBotMove(playerBoardState);
-                await sleep(150);
-                botAttackPos(nextMove[0], nextMove[1]);
-            };
-
             performNextBotMove();
         }
     }, [isGameInProgress, currentPlayerTurn, shotsLeft]);
@@ -64,7 +67,8 @@ const useGamePlayerLogic = () => {
 
                 // hit
                 if (pointExistsInArray([x, y], curShipCoords)) {
-                    if (isShipSunk(curShipCoords, playerBoardState)) {
+                    const tempShipCoords = curShipCoords.filter((point) => !(point[0] === x && point[1] === y));
+                    if (isShipSunk(tempShipCoords, playerBoardState)) {
                         result = { result: 'Hit', ship: shipName, shipCoords: curShipCoords };
                     } else {
                         result = { result: 'Hit' };
@@ -126,7 +130,6 @@ const useGamePlayerLogic = () => {
         if (countRemainingShips(enemyShipCoords, enemyBoardState) <= 0) handleWinner('Player');
     }, [enemyBoardState, playerBoardState]);
 
-
     const playerAttackPos = (x, y) => {
         const result = getAttackResult(x, y, 'Player');
         setEnemyBoardState((prevBoardState) => {
@@ -151,8 +154,14 @@ const useGamePlayerLogic = () => {
             const tempBoardState = [...prevBoardState];
             const prevData = { ...tempBoardState[y][x] };
 
-            if (result.result === 'Hit') tempBoardState[y][x] = { ...prevData, hit: 'ship' };
-            else tempBoardState[y][x] = { ...prevData, hit: 'miss' };
+            if (result.result === 'Hit') {
+                updateBotAIHitShip([x, y]);
+                tempBoardState[y][x] = { ...prevData, hit: 'ship' };
+            } else tempBoardState[y][x] = { ...prevData, hit: 'miss' };
+
+            if (result.ship) { // sunk ship
+                updateBotAIDestroyShip(result.shipCoords);
+            }
 
             return tempBoardState;
         });
