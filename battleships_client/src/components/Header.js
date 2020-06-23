@@ -14,6 +14,11 @@ const HeaderBar = styled.div`
     font-weight: 500;
 
     white-space: nowrap;
+    text-decoration: none;
+
+    &:visited {
+        text-decoration: none;
+    }
 
     @media (max-width: 768px) {
         font-size: 1em;
