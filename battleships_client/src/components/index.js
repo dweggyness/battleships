@@ -1,4 +1,5 @@
 
+export { default as Game } from './Game';
 export { default as Battleship } from './Battleship';
 export { default as Board } from './Board';
 export { default as Card } from './Card';

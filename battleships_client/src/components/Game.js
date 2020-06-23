@@ -1,10 +1,7 @@
 import React from 'react';
 import { MdLoop } from 'react-icons/md';
 import styled from '@emotion/styled';
-import useGameBotLogic from '../components/useGameBotLogic';
-import URLBox from '../components/URLBox';
-import Board from '../components/Board';
-import Header from '../components/Header';
+import { URLBox, Board, Header } from '../components';
 
 const FlexDiv = styled.div`
     display: flex;
@@ -75,7 +72,6 @@ const EnemyBoardContainer = styled.div`
     display: flex;
     align-self: flex-start;
     flex: 2;
-    padding: 15px;
 
     @media (max-width: 768px) {
         align-self: center;
@@ -136,7 +132,7 @@ const Game = (props) => {
         enemyBoardState,
         gameURL,
         randomizeShipPos,
-    } = useGameBotLogic();
+    } = props;
 
     return (
         <>
@@ -145,7 +141,7 @@ const Game = (props) => {
                 <FlexDiv style={{ flex: 2, justifyContent: 'flex-end', padding: 15 }}>
                     <PlayerBoardContainer>
                         <Board
-                            areShipsMovable={!isGameInProgress}
+                            areShipsMovable={!isGameInProgress && !hasGameEnded}
                             shipCoords={playerShipCoords}
                             board={playerBoardState}
                             handleShipCoordsChange={setPlayerShipCoords}
