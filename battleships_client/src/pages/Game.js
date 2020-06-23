@@ -145,7 +145,7 @@ const Game = (props) => {
                 <FlexDiv style={{ flex: 2, justifyContent: 'flex-end', padding: 15 }}>
                     <PlayerBoardContainer>
                         <Board
-                            areShipsMovable={!isGameInProgress}
+                            areShipsMovable={!isGameInProgress && !hasGameEnded}
                             shipCoords={playerShipCoords}
                             board={playerBoardState}
                             handleShipCoordsChange={setPlayerShipCoords}
