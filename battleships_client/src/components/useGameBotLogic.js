@@ -14,15 +14,14 @@ const useGamePlayerLogic = () => {
     const [enemyShipCoords, setEnemyShipCoords] = useState(generateRandomShipPositions(10));
     const [enemyBoardState, setEnemyBoardState] = useState(generateGridOfObjects(10));
     const [playerBoardState, setPlayerBoardState] = useState(generateGridOfObjects(10));
-    const [currentPlayerTurn, setCurrentPlayerTurn] = useState('Player');
-    const [shotsLeft, setShotsLeft] = useState(5);
+    const [currentPlayerTurn, setCurrentPlayerTurn] = useState();
+    const [shotsLeft, setShotsLeft] = useState();
     const [enemySunkShipCoords, setEnemySunkShipCoords] = useState({});
     const [headerMessage, setHeaderMessage] = useState('Place your battleships! \n\nDrag to move your ships, and tap on them to rotate the ship!');
     const [isGameInProgress, setIsGameInProgress] = useState(false);
     const [hasGameEnded, setHasGameEnded] = useState(false);
 
     useEffect(() => {
-        console.log('useeffect', currentPlayerTurn);
         if (isGameInProgress && currentPlayerTurn === 'bot' && shotsLeft >= 1) {
             const performNextBotMove = async () => {
                 const nextMove = getNextBotMove(playerBoardState);
@@ -36,6 +35,7 @@ const useGamePlayerLogic = () => {
 
     const startGame = () => {
         setCurrentPlayerTurn('Player');
+        setShotsLeft(5);
         setIsGameInProgress(true);
     };
 
@@ -90,7 +90,7 @@ const useGamePlayerLogic = () => {
         setPlayerShipCoords(generateRandomShipPositions(10));
     };
 
-    useEffect(() => {
+    const updatePlayerTurn = () => {
         if (shotsLeft <= 0) {
             if (currentPlayerTurn === 'Player') {
                 setShotsLeft(5 - Object.keys(enemySunkShipCoords).length);
@@ -106,6 +106,12 @@ const useGamePlayerLogic = () => {
         } else {
             setHeaderMessage(`Opponent turn. \n\n${shotsLeft} 💣 shots left`);
         }
+    }
+
+    useEffect(() => {
+        if (isGameInProgress && !hasGameEnded) {
+            updatePlayerTurn();
+        }
     }, [shotsLeft]);
 
     const handleWinner = (winner) => {
@@ -114,6 +120,12 @@ const useGamePlayerLogic = () => {
         if (winner === 'Player') setHeaderMessage('Victory! \n\n(☞ﾟヮﾟ)☞');
         else setHeaderMessage('You lost! \n\n(╯°□°）╯︵ ┻━┻');
     };
+
+    useEffect(() => {
+        if (countRemainingShips(playerShipCoords, playerBoardState) <= 0) handleWinner('bot');
+        if (countRemainingShips(enemyShipCoords, enemyBoardState) <= 0) handleWinner('Player');
+    }, [enemyBoardState, playerBoardState]);
+
 
     const playerAttackPos = (x, y) => {
         const result = getAttackResult(x, y, 'Player');
@@ -131,7 +143,6 @@ const useGamePlayerLogic = () => {
         });
 
         setShotsLeft((prev) => prev - 1);
-        if (countRemainingShips(enemyShipCoords, enemyBoardState) <= 0) handleWinner('Player');
     };
 
     const botAttackPos = (x, y) => {
@@ -147,7 +158,6 @@ const useGamePlayerLogic = () => {
         });
 
         setShotsLeft((prev) => prev - 1);
-        if (countRemainingShips(playerShipCoords, playerBoardState) <= 0) handleWinner('bot');
     };
 
     const onCellAttack = (x, y) => {
@@ -163,7 +173,7 @@ const useGamePlayerLogic = () => {
         playerShipCoords,
         playerBoardState,
         setPlayerShipCoords,
-        isPlayerReady: isGameInProgress,
+        isPlayerReady: isGameInProgress || hasGameEnded,
         headerMessage,
         hasGameEnded,
         resetGame,
