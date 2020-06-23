@@ -1,10 +1,7 @@
 import React from 'react';
 import { MdLoop } from 'react-icons/md';
 import styled from '@emotion/styled';
-import useGamePlayerLogic from '../components/useGamePlayerLogic';
-import URLBox from '../components/URLBox';
-import Board from '../components/Board';
-import Header from '../components/Header';
+import { useGamePlayerLogic, URLBox, Board, Header } from '../components';
 
 const FlexDiv = styled.div`
     display: flex;
@@ -75,7 +72,6 @@ const EnemyBoardContainer = styled.div`
     display: flex;
     align-self: flex-start;
     flex: 2;
-    padding: 15px;
 
     @media (max-width: 768px) {
         align-self: center;
@@ -142,7 +138,7 @@ const Game = (props) => {
         <>
             <Header />
             <Layout>
-                <FlexDiv style={{ flex: 2, justifyContent: 'flex-end', padding: 15 }}>
+                <FlexDiv style={{ flex: 2, justifyContent: 'flex-end' }}>
                     <PlayerBoardContainer>
                         <Board
                             areShipsMovable={!isGameInProgress && !hasGameEnded}

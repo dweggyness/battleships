@@ -10,7 +10,7 @@ const Card = styled.div`
     background-color: #FBFBFB;
     border-radius: 15px 15px 0 0;
 
-    height: 250px;
+    min-height: 250px;
     width: 70%;
 
     @media (max-width: 768px) {

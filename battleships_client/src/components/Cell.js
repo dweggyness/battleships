@@ -5,9 +5,11 @@ import XCross from './XCross';
 const StyledCell = styled.td`
     border: 1px solid #7e7e7e;
     background-color: transparent;
-    width: 2em;
+    width: 10vw;
+    max-width: 2em;
     height: 2em;
     padding: 0;
+    transition-duration: 0.15s;
 `;
 
 const Cell = React.forwardRef((props, ref) => {

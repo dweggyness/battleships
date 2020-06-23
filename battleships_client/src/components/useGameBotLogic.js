@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import useBotMakeMove from './useBotMakeMove';
-import { generateGridOfObjects } from '../utils';
-import pointExistsInArray from '../utils/pointExistsInArray';
-import countRemainingShips from '../utils/countRemainingShips';
-import generateRandomNumber from '../utils/generateRandomNumber';
-import generateRandomShipPositions from '../utils/generateRandomShipPositions';
-import isShipSunk from '../utils/isShipSunk';
+import { generateGridOfObjects, pointExistsInArray, countRemainingShips, generateRandomNumber, generateRandomShipPositions, isShipSunk } from '../utils';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

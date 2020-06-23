@@ -2,6 +2,8 @@
 
 body {
   margin: 0;
+  width: 100%;
+  overflow-x: hidden;
   font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Droid Sans', 'Helvetica Neue',
     sans-serif;

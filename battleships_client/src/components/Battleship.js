@@ -1,6 +1,13 @@
 import React from 'react';
+import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
+
+const Ship = styled.div`
+    position: absolute;
+    margin: 2.25px 0 0 2.25px;
+    border-radius: 10px;
+`;
 
 const Battleship = (props) => {
     const { areShipsMovable = false, sunk, hovering, handleShipRotate = () => {}, ship } = props;
@@ -30,15 +37,11 @@ const Battleship = (props) => {
     const style = {
         width: `${width}em`,
         height: `${height}em`,
-
-        position: 'absolute',
         backgroundColor,
         border,
-        borderRadius: '10px',
-        margin: '2.25px 0 0 2.25px',
     };
 
-    return <div
+    return <Ship
         ref={drag}
         style={style}
         onClick={handleShipRotate}

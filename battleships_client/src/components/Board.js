@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import CellWithShipHandling from './CellWithShipHandling';
-import isShipSunk from '../utils/isShipSunk';
+import { isShipSunk } from '../utils';
 
 const Table = styled.table`
     border: 1px solid black;

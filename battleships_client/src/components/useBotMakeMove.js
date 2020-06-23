@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import generateRandomNumber from '../utils/generateRandomNumber';
-import isPointWithinBounds from '../utils/isPointWithinBounds';
-import pointExistsInArray from '../utils/pointExistsInArray';
+import { generateRandomNumber, isPointWithinBounds, pointExistsInArray } from '../utils';
 
 const useBotMakeMove = () => {
     const [hitCoordsWithShip, setHitCoordsWithShip] = useState([]);

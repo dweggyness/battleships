@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 
-import { generateGridOfObjects } from '../utils';
-import countRemainingShips from '../utils/countRemainingShips';
-import generateRandomShipPositions from '../utils/generateRandomShipPositions';
+import { generateGridOfObjects, countRemainingShips, generateRandomShipPositions } from '../utils';
 
 const socket = io('http://localhost:8080');
 

@@ -3,9 +3,8 @@ import { Redirect } from 'react-router-dom';
 import { GiBroadsword } from 'react-icons/gi';
 import { RiRobotLine } from 'react-icons/ri';
 import styled from '@emotion/styled';
-import generateRandomNumber from '../utils/generateRandomNumber';
-import Header from '../components/Header';
-import Card from '../components/Card';
+import { generateRandomNumber } from '../utils';
+import { Header, Card } from '../components';
 
 const CardLayout = styled.div`
     display: flex;

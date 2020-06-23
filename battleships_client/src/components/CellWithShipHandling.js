@@ -1,7 +1,6 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import isShipPositionValid from '../utils/isShipPositionValid';
-import buildShipCoords from '../utils/buildShipCoords';
+import { isShipPositionValid, buildShipCoords } from '../utils';
 import Battleship from './Battleship';
 import Cell from './Cell';
 
