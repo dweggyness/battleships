@@ -5,11 +5,10 @@ const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const bodyParser = require('body-parser');
-
 exports.io = io;
 const { setRoutes } = require('./src/routes');
 
-const port = 8080;
+const port = process.env.PORT || 5000;
 
 async function startServer() {
     app.use(bodyParser.json());
