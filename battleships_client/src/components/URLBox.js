@@ -8,7 +8,6 @@ const URLBox = styled.div`
     background-color: white;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
     width: 250px;
     height: 30px;
     padding: 0px 5px;
