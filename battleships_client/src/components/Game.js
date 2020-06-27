@@ -71,6 +71,7 @@ const GameInfoContainer = styled.div`
 const EnemyBoardContainer = styled.div`
     display: flex;
     align-self: flex-start;
+    padding: 15px;
     flex: 2;
 
     @media (max-width: 768px) {
@@ -141,7 +142,7 @@ const Game = (props) => {
                 <FlexDiv style={{ flex: 2, justifyContent: 'flex-end', padding: 15 }}>
                     <PlayerBoardContainer>
                         <Board
-                            areShipsMovable={!isGameInProgress && !hasGameEnded}
+                            areShipsMovable={!isPlayerReady && !hasGameEnded}
                             shipCoords={playerShipCoords}
                             board={playerBoardState}
                             handleShipCoordsChange={setPlayerShipCoords}
