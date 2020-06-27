@@ -17,14 +17,14 @@ const CellWithShipHandling = (props) => {
         },
         collect: (monitor) => ({
             hoveringShip: monitor.getItem(),
-            isPointerOver: monitor.isOver(),
+            isPointerOver: monitor.isOver({ shallow: true }),
             isLegalMove: monitor.canDrop(),
         }),
     });
 
     let shipObject = null;
     if (shipInCell) shipObject = { ship: shipInCell };
-    if (isPointerOver && isLegalMove) shipObject = { ship: hoveringShip.ship, hovering: true };
+    if (isPointerOver && isLegalMove) shipObject = { ship: hoveringShip.ship, hovering: true, touchable: false };
 
     const isShipValidAtThisPosition = (ship) => {
         const { shipName, layout, length } = ship;
@@ -55,6 +55,7 @@ const CellWithShipHandling = (props) => {
             handleShipRotate={handleShipRotate}
             areShipsMovable={areShipsMovable}
             hovering={shipObject.hovering}
+            touchable={shipObject.touchable}
         />}
     </Cell>;
 };

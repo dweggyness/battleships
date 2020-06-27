@@ -10,7 +10,7 @@ const Ship = styled.div`
 `;
 
 const Battleship = (props) => {
-    const { areShipsMovable = false, sunk, hovering, handleShipRotate = () => {}, ship } = props;
+    const { areShipsMovable = false, touchable = true, sunk, hovering, handleShipRotate = () => {}, ship } = props;
     const [{ isDragging }, drag] = useDrag({
         item: { type: 'ship', ship },
         canDrag: () => areShipsMovable,
@@ -37,6 +37,7 @@ const Battleship = (props) => {
     const style = {
         width: `${width}em`,
         height: `${height}em`,
+        pointerEvents: touchable ? 'auto' : 'none',
         backgroundColor,
         border,
     };
