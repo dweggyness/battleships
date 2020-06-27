@@ -17,7 +17,7 @@ const useGamePlayerLogic = () => {
     const [isPlayerReady, setIsPlayerReady] = useState(false);
     const [isGameInProgress, setIsGameInProgress] = useState(false);
     const [hasGameEnded, setHasGameEnded] = useState(false);
-    const [socket] = useState(io(`http://localhost:${process.env.PORT}`));
+    const [socket] = useState(io(`${process.env.DOMAIN}:${process.env.PORT}`));
 
     useEffect(() => {
         if (socket) return () => socket.disconnect();

@@ -41,8 +41,5 @@ exports.setRoutes = async (app) => {
         });
     });
 
-    app.get('/', (req, res) => {
-        res.sendFile(`${__dirname}/index.html`);
-    });
     return app;
 };
