@@ -82,6 +82,7 @@ const useGamePlayerLogic = () => {
         setEnemyShipCoords(generateRandomShipPositions(10));
         setHasGameEnded(false);
         setIsGameInProgress(false);
+        setCurrentPlayerTurn();
         setHeaderMessage('Place your battleships! \n\nDrag to move your ships, and tap on them to rotate the ship!');
     };
 

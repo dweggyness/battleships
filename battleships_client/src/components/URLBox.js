@@ -6,6 +6,8 @@ const URLBox = styled.div`
     display: flex;
     align-items: center;
     background-color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
     width: 250px;
     height: 30px;
     padding: 0px 5px;

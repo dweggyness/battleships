@@ -1,7 +1,7 @@
 import React from 'react';
 import { MdLoop } from 'react-icons/md';
 import styled from '@emotion/styled';
-import { URLBox, Board, Header } from '../components';
+import { URLBox, Board, Header } from '.';
 
 const FlexDiv = styled.div`
     display: flex;

@@ -4,8 +4,6 @@ import io from 'socket.io-client';
 
 import { generateGridOfObjects, countRemainingShips, generateRandomShipPositions } from '../utils';
 
-const socket = io('http://localhost:8080');
-
 const useGamePlayerLogic = () => {
     const [playerShipCoords, setPlayerShipCoords] = useState(generateRandomShipPositions(10));
     const [enemyBoardState, setEnemyBoardState] = useState(generateGridOfObjects(10));
@@ -19,6 +17,11 @@ const useGamePlayerLogic = () => {
     const [isPlayerReady, setIsPlayerReady] = useState(false);
     const [isGameInProgress, setIsGameInProgress] = useState(false);
     const [hasGameEnded, setHasGameEnded] = useState(false);
+    const [socket] = useState(io('http://localhost:8080'));
+
+    useEffect(() => {
+        if (socket) return () => socket.disconnect();
+    }, [socket]);
 
     const { id } = useParams();
     let gameURL = useLocation();
@@ -26,6 +29,7 @@ const useGamePlayerLogic = () => {
 
     const startGame = () => {
         setIsPlayerReady(true);
+        setShotsLeft(5);
         setHeaderMessage('Waiting for opponent...');
         socket.emit('startGame', { gameID: id,
             shipCoords: playerShipCoords,
@@ -33,12 +37,14 @@ const useGamePlayerLogic = () => {
     };
 
     const resetGame = () => {
+        socket.emit('playAgain', 'play again');
         setEnemyBoardState(generateGridOfObjects(10));
         setPlayerBoardState(generateGridOfObjects(10));
         setEnemySunkShipCoords({});
         setHasGameEnded(false);
         setIsGameInProgress(false);
         setIsPlayerReady(false);
+        setCurrentPlayerTurn();
         setHeaderMessage('Place your battleships! \n\nDrag to move your ships, and tap on them to rotate the ship!');
     };
 
@@ -48,6 +54,7 @@ const useGamePlayerLogic = () => {
 
     useEffect(() => {
         socket.on('gameStream', (msg) => {
+            console.log(msg);
             const { player, attackPos, result, winner } = msg;
 
             if (player === playerType) {
@@ -76,9 +83,14 @@ const useGamePlayerLogic = () => {
             }
 
             if (winner) {
+                const { reason } = msg;
                 setHasGameEnded(true);
-                if (winner === playerType) setHeaderMessage('Victory! \n\n(☞ﾟヮﾟ)☞');
-                else setHeaderMessage('You lost! \n\n(╯°□°）╯︵ ┻━┻');
+                if (reason === 'victory') {
+                    if (winner === playerType) setHeaderMessage('Victory! \n\n(☞ﾟヮﾟ)☞');
+                    else setHeaderMessage('You lost! \n\n(╯°□°）╯︵ ┻━┻');
+                } else {
+                    setHeaderMessage('Opponent disconnected \n\n (┬┬﹏┬┬)');
+                }
             }
         });
 
