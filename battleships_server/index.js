@@ -7,7 +7,7 @@ const io = require('socket.io')(http);
 const bodyParser = require('body-parser');
 
 exports.io = io;
-const { setRoutes } = require('./routes');
+const { setRoutes } = require('./src/routes');
 
 const port = 8080;
 

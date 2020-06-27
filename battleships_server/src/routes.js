@@ -1,6 +1,6 @@
 
 const { UserGameService } = require('./services/UserGameService');
-const { io } = require('./app');
+const { io } = require('..');
 // TODO : begin using node-cache
 
 exports.setRoutes = async (app) => {
