@@ -1,6 +1,6 @@
 # Battleships
 
-A battleships clone following the 2002 Hasbro version which has 5 ships, of sizes 5,4,3,3,2 respectively. The project will consist of both the client and server side. Players will have the option of playing against a BOT, or playing against a friend by sharing a link/game code.
+A battleships clone following the 2002 Hasbro version which has 5 ships, of sizes 5,4,3,3,2 respectively. Players have the option of playing against a BOT, or playing against a friend by sharing a link/game code.
 
 Created as practice for making a full-stack app. Mobile friendly! ( kinda )
 
