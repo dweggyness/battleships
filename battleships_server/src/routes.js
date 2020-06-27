@@ -7,7 +7,6 @@ exports.setRoutes = async (app) => {
     io.on('connection', (socket) => {
         const clientID = socket.id;
         const GameHandler = new UserGameService(socket);
-        console.log('Connected!: ', clientID);
 
         socket.on('disconnect', () => {
             GameHandler.handleDisconnect(clientID);
@@ -32,6 +31,14 @@ exports.setRoutes = async (app) => {
                 GameHandler.handleError(e.message);
             }
         });
+
+        socket.on('playAgain', () => {
+            try {
+                GameHandler.handlePlayAgain();
+            } catch (e) {
+                GameHandler.handleError(e.message);
+            }
+        });
     });
 
     app.get('/', (req, res) => {
@@ -39,14 +46,3 @@ exports.setRoutes = async (app) => {
     });
     return app;
 };
-
-/* socket.emit('startGame', { gameID: 1, shipCoords: {
-patrol: [[1,1],[1,2]], destroyer: [[1,3],[1,4],[1,5]],
-submarine: [[5,3],[4,3],[4,4]], battleship: [[3,3],[4,4],[5,5],[3,3]],
-carrier: [[3,3],[4,4],[5,5],[3,3],[4,4]]
-}});
-*/
-
-/*
-socket.emit('attackPos', { client: , attackPos: [7,7] })
-*/

@@ -96,11 +96,10 @@ module.exports.UserGameService = class UserGameService {
 
     handleWinner(player, reason) {
         io.in(this.gameID).emit('gameStream', { winner: player, reason });
-        this.endGameCleanup();
+        ongoingGamesCache.del(this.gameID);
     }
 
-    endGameCleanup() {
-        ongoingGamesCache.del(this.gameID);
+    handlePlayAgain() {
         this.gameID = '';
     }
 };
