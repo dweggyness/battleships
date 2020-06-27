@@ -54,7 +54,6 @@ const useGamePlayerLogic = () => {
 
     useEffect(() => {
         socket.on('gameStream', (msg) => {
-            console.log(msg);
             const { player, attackPos, result, winner } = msg;
 
             if (player === playerType) {
