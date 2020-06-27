@@ -1,7 +1,7 @@
 
 const { GameRapidFire: Game } = require('./GameRapidFire');
 const { ongoingGamesCache } = require('../cache/cache');
-const { io } = require('../..');
+const { io } = require('../app');
 
 module.exports.UserGameService = class UserGameService {
     constructor(socket) {
