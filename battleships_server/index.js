@@ -18,10 +18,10 @@ async function startServer() {
 
     await setRoutes(app);
 
-    app.use(express.static(path.resolve(__dirname, '../battleships_client/build')));
+    app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 
     app.get('*', (request, response) => {
-        response.sendFile(path.resolve(__dirname, '../battleships_client/build', 'index.html'));
+        response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
     });
 
     http.listen(port, () => console.log(`Server started at port ${port}`));
