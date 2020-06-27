@@ -2,13 +2,10 @@
   "name": "battleships_server",
   "version": "1.0.0",
   "description": "",
-  "engines": {
-    "node": "10.x"
-  },
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node battleships_server",
-    "build": "cd battleships_client && npm install && npm run build"
+    "start": "nodemon --exec babel-node src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
