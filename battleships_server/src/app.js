@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 exports.io = io;
 const { setRoutes } = require('./routes');
 
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 async function startServer() {
     app.use(bodyParser.json());
