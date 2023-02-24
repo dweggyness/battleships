@@ -6,8 +6,8 @@ Created as practice for making a full-stack app. Mobile friendly! ( kinda )
 
 ## App
 
-**DEMO** : **https://waterbound-fighting-vessels.herokuapp.com/**
-
+**DEMO** : **https://waterbound-fighting-vessels.herokuapp.com/** 
+ 
 ![screenshot of game page](https://i.imgur.com/Iv8G9ih.jpg)
 
 ## Stack
